@@ -1,5 +1,6 @@
 package com.example.formulizeprototype;
 
+import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
 import android.annotation.TargetApi;
 import android.app.Activity;

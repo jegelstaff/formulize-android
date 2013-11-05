@@ -18,7 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import ca.formulize.android.screen.ScreenWebActivity;
 
-import com.example.formulizeprototype.R;
+import ca.formulize.android.R;
 import com.example.formulizeprototype.ScreenActivity;
 
 public class ScreenListActivity extends Activity {

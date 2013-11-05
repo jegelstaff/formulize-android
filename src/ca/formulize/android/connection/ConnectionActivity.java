@@ -19,7 +19,7 @@ import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBContract.ConnectionEntry;
 import ca.formulize.android.data.FormulizeDBHelper;
 
-import com.example.formulizeprototype.R;
+import ca.formulize.android.R;
 
 /**
  * Represents the connection list screen where users can choose from a list of

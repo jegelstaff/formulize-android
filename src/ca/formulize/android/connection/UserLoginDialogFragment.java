@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import ca.formulize.android.data.ConnectionInfo;
 
-import com.example.formulizeprototype.R;
+import ca.formulize.android.R;
 
 /**
  * The login dialogue that should appear when the user attempts to connect to a

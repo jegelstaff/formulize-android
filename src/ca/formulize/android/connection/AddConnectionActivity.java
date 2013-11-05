@@ -13,7 +13,7 @@ import android.widget.Toast;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBHelper;
 
-import com.example.formulizeprototype.R;
+import ca.formulize.android.R;
 
 /**
  * Represents the screen that allows users to create new connections to a

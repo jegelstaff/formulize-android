@@ -6,8 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import com.example.formulizeprototype.R;
-import com.example.formulizeprototype.R.menu;
+import ca.formulize.android.R;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -21,7 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;

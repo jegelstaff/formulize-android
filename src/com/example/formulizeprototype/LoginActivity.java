@@ -1,5 +1,6 @@
 package com.example.formulizeprototype;
 
+import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
 import android.app.Activity;
 import android.content.Intent;

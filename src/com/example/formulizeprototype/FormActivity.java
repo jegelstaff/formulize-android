@@ -2,6 +2,7 @@ package com.example.formulizeprototype;
 
 import org.apache.http.util.EncodingUtils;
 
+import ca.formulize.android.R;
 import ca.formulize.android.menu.ApplicationListActivity;
 
 import android.annotation.TargetApi;

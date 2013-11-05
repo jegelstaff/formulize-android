@@ -2,6 +2,7 @@ package com.example.formulizeprototype;
 
 import java.util.ArrayList;
 
+import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
 
 import android.app.Activity;
