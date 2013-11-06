@@ -1,13 +1,12 @@
 package ca.formulize.android.menu;
 
-import java.util.ArrayList;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,9 +15,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import ca.formulize.android.R;
+import ca.formulize.android.data.FormulizeApplication;
+import ca.formulize.android.data.FormulizeLink;
 import ca.formulize.android.screen.ScreenWebActivity;
 
-import ca.formulize.android.R;
 import com.example.formulizeprototype.ScreenActivity;
 
 public class ScreenListActivity extends Activity {
@@ -26,26 +27,32 @@ public class ScreenListActivity extends Activity {
 	public static final String ADMIN_USERNAME = "admin";
 	public static final String SCREEN = "Screen";
 
+	private FormulizeApplication currentApplication;
+	private ArrayAdapter<FormulizeLink> linksAdapter;
+	private ListView linksListView;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_screen_list);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
+
 		// Get selected application
 		Intent screenListIntent = getIntent();
-		String application = screenListIntent.getStringExtra(ApplicationListActivity.APPLICATION);
-		setTitle(application);
-		
-		// Initialize list of availible screens for the application
-        ArrayList<String> screenList = getApplicationScreens(application, ADMIN_USERNAME);
-        ArrayAdapter<String> arrayAdapter =      
-        new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, screenList);
-        
-		ListView applicationListView = (ListView) findViewById(R.id.screenList);
-        applicationListView.setAdapter(arrayAdapter); 
-        applicationListView.setOnItemClickListener(new ScreenListClickListener());
+		currentApplication = screenListIntent
+				.getParcelableExtra(ApplicationListActivity.APPLICATION);
+		setTitle(currentApplication.getName());
+
+		// Initialize list of available screens for the application
+		FormulizeLink[] links = currentApplication.getLinks();
+		linksAdapter = new ArrayAdapter<FormulizeLink>(this,
+				android.R.layout.simple_list_item_1, links);
+
+		// Set up the list view's adapter and click listener
+		linksListView = (ListView) findViewById(R.id.screenList);
+		linksListView.setAdapter(linksAdapter);
+		linksListView.setOnItemClickListener(new ScreenListClickListener());
 	}
 
 	/**
@@ -81,24 +88,16 @@ public class ScreenListActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	// Hardcoded for prototyping
-	private ArrayList<String> getApplicationScreens(String application, String user) {
-		ArrayList<String> screenList = new ArrayList<String>();
-		screenList.add("Animal List");
-		screenList.add("Wildlife Activity Form");
-		screenList.add("Animal Spotting");
-		return screenList;
-	}
-	
+
 	private class ScreenListClickListener implements OnItemClickListener {
 
 		@Override
-		public void onItemClick(AdapterView<?> adapter, View view, int position,
-				long screenID) {
-			// TODO Auto-generated method stub
+		public void onItemClick(AdapterView<?> adapter, View view,
+				int position, long screenID) {
+
 			// Go to Application Screen List Activity with selected application
-			TextView screenName = (TextView) view.findViewById(android.R.id.text1);
+			TextView screenName = (TextView) view
+					.findViewById(android.R.id.text1);
 
 			if (position == 0) {
 				Intent screenList = new Intent(ScreenListActivity.this,

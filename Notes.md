@@ -1,11 +1,15 @@
 ## Current Tasks
-
+ Do we need to break up menu links requests by application instead of querying the entire structure?
+ General forms, how do we retrieve those?
+ 
 ### Retrieving Menu Information
-[10/25/2013, 16:41:16 ] Julian Egelstaff: Yeah...you should write a PHP file that will live on the server, and you can hit that from the mobile client, and this PHP file should have include "mainfile.php"; at the top, so it will check the session and all that, and then you want to use the API in the class/application.php file where the menu handler is, and gather the data about the menu entries, and pass that back to the client as json or xml or whatever is easy for the client to process, because we'll need to use that info to build the menu on the client.
+[10/25/2013, 16:41:16 ] Julian Egelstaff: Yeah...you should write a PHP file that will live on the server, and you can hit that from the mobile client, and this PHP file should have include "mainfile.php"; at the top, so it will check the session and all that, and then you want to use the API in the class/application.php file where the menu handler is, and gather the data about the menu entries, and pass that back to the client as json or xml or whatever is easy for the https://github.com/eikonos/Off-Roadclient to process, because we'll need to use that info to build the menu on the client.
 [10/25/2013, 16:41:47 ] Julian Egelstaff: Wejdan may be able to point you in the right direction re: the API, because she's the most recent one to work with it.
 
 #### Create a data representation of Applications and screens in mobile clients
 * Need to check what attributes an application/screen needs to contain
+* Using [Google GSON](https://code.google.com/p/google-gson/) to parse JSON objects received by the server.
+*
 
 #### Create a new PHP file, a new GET handler that returns a JSON/XML representation of the application information on the server.
 

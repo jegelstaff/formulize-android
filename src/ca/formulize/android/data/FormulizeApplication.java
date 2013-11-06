@@ -1,6 +1,10 @@
 package ca.formulize.android.data;
 
-import java.util.List;
+import java.util.ArrayList;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 
 /**
  * This class represents a Formulize Application and its links it contains to
@@ -9,7 +13,7 @@ import java.util.List;
  * @author timch326
  * 
  */
-public class FormulizeApplication {
+public class FormulizeApplication implements Parcelable {
 
 	private int appid;
 	private String name;
@@ -41,4 +45,48 @@ public class FormulizeApplication {
 		this.links = links;
 	}
 	
+	public String toString() {
+		return name;
+	}
+	
+	/*
+	 * Implementation of the Parcelable interface below
+	 * @see android.os.Parcelable
+	 */
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(appid);
+		dest.writeString(description);
+		dest.writeString(name);
+		dest.writeParcelableArray(links, 0);
+	}
+
+	// static field used to regenerate formulize link data from a parcel
+	public static final Parcelable.Creator<FormulizeApplication> CREATOR = new Parcelable.Creator<FormulizeApplication>() {
+		public FormulizeApplication createFromParcel(Parcel pc) {
+			return new FormulizeApplication(pc);
+		}
+
+		@Override
+		public FormulizeApplication[] newArray(int size) {
+			return new FormulizeApplication[size];
+		}
+	};
+
+	// Constructor used by CREATOR object to read data from parcel
+	public FormulizeApplication(Parcel pc) {
+		appid = pc.readInt();
+		description = pc.readString();
+		name = pc.readString();
+		
+		Parcelable[] linksParcel = pc.readParcelableArray(FormulizeLink.class.getClassLoader());
+		links = new FormulizeLink[linksParcel.length];
+		System.arraycopy(linksParcel, 0, links, 0, linksParcel.length);
+	
+	}
 }

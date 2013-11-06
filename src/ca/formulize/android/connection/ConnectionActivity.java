@@ -33,7 +33,6 @@ public class ConnectionActivity extends FragmentActivity {
 	private ListView connectionList;
 	private FormulizeDBHelper dbHelper;
 	private SimpleCursorAdapter connectionAdapter;
-	private ActionMode.Callback actionModeCallback;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

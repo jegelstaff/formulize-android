@@ -61,15 +61,21 @@ public class ConnectionInfo implements Parcelable {
 		this.password = mPassword;
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
 
 	@Override
 	public String toString() {
 		return "Name: " + connectionName + ", URL: " + connectionURL
 				+ ", Username: " + username + ", Password: " + password;
+	}
+
+	/*
+	 * Implementation of the Parcelable interface below
+	 * @see android.os.Parcelable
+	 */
+	
+	@Override
+	public int describeContents() {
+		return 0;
 	}
 
 	@Override
@@ -80,8 +86,8 @@ public class ConnectionInfo implements Parcelable {
 
 	// static field used to regenerate connection info from a parcel
 	public static final Parcelable.Creator<ConnectionInfo> CREATOR = new Parcelable.Creator<ConnectionInfo>() {
-		public ConnectionInfo createFromParcel(Parcel in) {
-			return new ConnectionInfo(in);
+		public ConnectionInfo createFromParcel(Parcel pc) {
+			return new ConnectionInfo(pc);
 		}
 
 		@Override
