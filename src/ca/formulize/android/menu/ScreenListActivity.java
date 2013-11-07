@@ -24,7 +24,7 @@ import com.example.formulizeprototype.ScreenActivity;
 
 public class ScreenListActivity extends Activity {
 
-	public static final String ADMIN_USERNAME = "admin";
+	public static final String CURRENT_APPLICATION = "ca.formulize.android.menu.ScreenListActivity.currentApplication";
 	public static final String SCREEN = "Screen";
 
 	private FormulizeApplication currentApplication;
@@ -41,7 +41,7 @@ public class ScreenListActivity extends Activity {
 		// Get selected application
 		Intent screenListIntent = getIntent();
 		currentApplication = screenListIntent
-				.getParcelableExtra(ApplicationListActivity.APPLICATION);
+				.getParcelableExtra(CURRENT_APPLICATION);
 		setTitle(currentApplication.getName());
 
 		// Initialize list of available screens for the application
@@ -53,6 +53,20 @@ public class ScreenListActivity extends Activity {
 		linksListView = (ListView) findViewById(R.id.screenList);
 		linksListView.setAdapter(linksAdapter);
 		linksListView.setOnItemClickListener(new ScreenListClickListener());
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+		
+		savedInstanceState.putParcelable(CURRENT_APPLICATION, currentApplication);
+	}
+	
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	  super.onRestoreInstanceState(savedInstanceState);
+	  
+	  currentApplication = savedInstanceState.getParcelable(CURRENT_APPLICATION);
 	}
 
 	/**
@@ -76,14 +90,8 @@ public class ScreenListActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
+			//NavUtils.navigateUpFromSameTask(this);
+			onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -92,24 +100,17 @@ public class ScreenListActivity extends Activity {
 	private class ScreenListClickListener implements OnItemClickListener {
 
 		@Override
-		public void onItemClick(AdapterView<?> adapter, View view,
-				int position, long screenID) {
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long screenID) {
 
-			// Go to Application Screen List Activity with selected application
-			TextView screenName = (TextView) view
-					.findViewById(android.R.id.text1);
+			// Open selected link with the screen list activity
+			FormulizeLink selectedLink = (FormulizeLink) parent.getAdapter()
+					.getItem(position);
+			Intent screenList = new Intent(ScreenListActivity.this,
+					ScreenWebActivity.class);
+			screenList.putExtra(ScreenWebActivity.SID, selectedLink.getScreen());
+			startActivity(screenList);
 
-			if (position == 0) {
-				Intent screenList = new Intent(ScreenListActivity.this,
-						ScreenWebActivity.class);
-				screenList.putExtra(ScreenWebActivity.SID, "1");
-				startActivity(screenList);
-				return;
-			}
-			Intent screenListIntent = new Intent(ScreenListActivity.this,
-					ScreenActivity.class);
-			screenListIntent.putExtra(SCREEN, screenName.getText().toString());
-			startActivity(screenListIntent);
 		}
 	}
 

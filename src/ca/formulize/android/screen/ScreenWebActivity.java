@@ -26,7 +26,7 @@ import android.webkit.WebViewClient;
 import ca.formulize.android.connection.FUserSession;
 
 public class ScreenWebActivity extends Activity {
-	public static final String SID = "Screen ID";
+	public static final String SID = "ca.formulize.android.screen.screenID";
 	private WebView webView;
 
 	@Override
@@ -39,7 +39,7 @@ public class ScreenWebActivity extends Activity {
 		webView = new WebView(this);
 		setContentView(webView);
 
-		// Parameteres to access a screen
+		// Parameters to access a screen
 		Intent screenIntent = getIntent();
 		String sid = screenIntent.getStringExtra(SID);
 		FUserSession userSession = FUserSession.getInstance();
@@ -74,7 +74,7 @@ public class ScreenWebActivity extends Activity {
 		webView.setWebChromeClient(new WebChromeClient());
 		webView.getSettings().setJavaScriptEnabled(true);
 		String fFormURL = userSession.getConnectionInfo().getConnectionURL()
-				+ "modules/formulize/index.php?sid=" + sid;
+				+ "modules/formulize/index.php?" + sid;
 		
 		Log.d("Formulize", "screenURL: " + fFormURL);
 		
@@ -102,14 +102,8 @@ public class ScreenWebActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
+			//NavUtils.navigateUpFromSameTask(this);
+			onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

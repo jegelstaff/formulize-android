@@ -13,23 +13,32 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 import ca.formulize.android.data.ConnectionInfo;
+import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.menu.ApplicationListActivity;
 
 public class FUserSession {
 	public final static String LOGIN_FAILED = "Login has failed";
 	public final static String CONNECTION_FAILED = "Invalid Formulize Connection";
 	public final static String NO_USER_CREDENTIALS = "Please enter a username and password";
+	public static final String TEST_JSON = "[{\"appid\":\"1\",\"name\":\"Application1\",\"description\":false,\"links\":[{\"menu_id\":\"3\",\"appid\":\"1\",\"screen\":\"fid=2\",\"rank\":\"1\",\"url\":\"\",\"link_text\":\"testFormLink\",\"name\":null,\"text\":\"testFormLink\"},{\"menu_id\":\"4\",\"appid\":\"1\",\"screen\":\"sid=1\",\"rank\":\"2\",\"url\":\"\",\"link_text\":\"Fruity Form\",\"name\":null,\"text\":\"Fruity Form\"},{\"menu_id\":\"5\",\"appid\":\"1\",\"screen\":\"sid=5\",\"rank\":\"4\",\"url\":\"\",\"link_text\":\"Mobile Form\",\"name\":null,\"text\":\"Mobile Form\"}]},{\"appid\":\"2\",\"name\":\"The Second Application\",\"description\":false,\"links\":[{\"menu_id\":\"9\",\"appid\":\"2\",\"screen\":\"sid=7\",\"rank\":\"1\",\"url\":\"\",\"link_text\":\"For Students\",\"name\":null,\"text\":\"For Students\"},{\"menu_id\":\"11\",\"appid\":\"2\",\"screen\":\"sid=9\",\"rank\":\"3\",\"url\":\"\",\"link_text\":\"Anyone can see this form\",\"name\":null,\"text\":\"Anyone can see this form\"}]}]";
 
 	private static FUserSession instance;
 	private ConnectionInfo connectionInfo;
 	private String userToken;
+	public FormulizeApplication[] applications;
+
 
 	public static FUserSession getInstance() {
 		if (instance == null) {
@@ -52,6 +61,15 @@ public class FUserSession {
 
 	public String getUserToken() {
 		return userToken;
+	}
+	
+	public FormulizeApplication[] getApplications() {
+		// Parse JSON with GSON Library
+		Gson gson = new GsonBuilder().setFieldNamingPolicy(
+				FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+		applications = gson.fromJson(TEST_JSON, FormulizeApplication[].class);
+		
+		return applications;
 	}
 
 	/**
@@ -272,4 +290,5 @@ public class FUserSession {
 		}
 
 	}
+
 }
