@@ -1,7 +1,9 @@
 package ca.formulize.android.connection;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.CookieHandler;
@@ -13,20 +15,19 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.menu.ApplicationListActivity;
+
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class FUserSession {
 	public final static String LOGIN_FAILED = "Login has failed";
@@ -38,7 +39,6 @@ public class FUserSession {
 	private ConnectionInfo connectionInfo;
 	private String userToken;
 	public FormulizeApplication[] applications;
-
 
 	public static FUserSession getInstance() {
 		if (instance == null) {
@@ -62,13 +62,13 @@ public class FUserSession {
 	public String getUserToken() {
 		return userToken;
 	}
-	
+
 	public FormulizeApplication[] getApplications() {
 		// Parse JSON with GSON Library
 		Gson gson = new GsonBuilder().setFieldNamingPolicy(
 				FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 		applications = gson.fromJson(TEST_JSON, FormulizeApplication[].class);
-		
+
 		return applications;
 	}
 
@@ -210,7 +210,7 @@ public class FUserSession {
 						"Set-Cookie");
 				Log.d("Formulize", cookies.toString());
 
-				// If there are 2 or more cookeis received, login was successful
+				// If there are 2 or more cookies received, login was successful
 				if (cookies.size() >= 2) {
 					response = "Logged In";
 				} else {
