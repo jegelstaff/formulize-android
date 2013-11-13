@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,13 +12,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import ca.formulize.android.R;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.data.FormulizeLink;
 import ca.formulize.android.screen.ScreenWebActivity;
-
-import com.example.formulizeprototype.ScreenActivity;
 
 public class ScreenListActivity extends Activity {
 
@@ -34,7 +29,6 @@ public class ScreenListActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_screen_list);
 		// Show the Up button in the action bar.
 		setupActionBar();
 
@@ -50,9 +44,10 @@ public class ScreenListActivity extends Activity {
 				android.R.layout.simple_list_item_1, links);
 
 		// Set up the list view's adapter and click listener
-		linksListView = (ListView) findViewById(R.id.screenList);
+		linksListView = new ListView(this);
 		linksListView.setAdapter(linksAdapter);
 		linksListView.setOnItemClickListener(new ScreenListClickListener());
+		setContentView(linksListView);
 	}
 	
 	@Override

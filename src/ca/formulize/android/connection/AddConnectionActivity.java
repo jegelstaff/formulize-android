@@ -8,12 +8,17 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBHelper;
-
-import ca.formulize.android.R;
 
 /**
  * Represents the screen that allows users to create new connections to a
@@ -40,6 +45,8 @@ public class AddConnectionActivity extends FragmentActivity {
 	// UI References
 	private EditText connectionURLView;
 	private EditText connectionNameView;
+	private CheckBox saveLoginCredentialsView;
+	private TextView loginDetails;
 	private EditText usernameView;
 	private EditText passwordView;
 
@@ -54,8 +61,13 @@ public class AddConnectionActivity extends FragmentActivity {
 		// TODO: Set up connection values if they exist to allow edits
 		connectionURLView = (EditText) findViewById(R.id.connection_url);
 		connectionNameView = (EditText) findViewById(R.id.connection_name);
+		saveLoginCredentialsView = (CheckBox) findViewById(R.id.save_login_credentials_box);
+		loginDetails = (TextView) findViewById(R.id.login_details);
 		usernameView = (EditText) findViewById(R.id.username);
 		passwordView = (EditText) findViewById(R.id.password);
+
+		saveLoginCredentialsView
+				.setOnCheckedChangeListener(new onCheckBoxClickedListener());
 	}
 
 	/**
@@ -123,6 +135,32 @@ public class AddConnectionActivity extends FragmentActivity {
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	private class onCheckBoxClickedListener implements OnCheckedChangeListener {
+
+		@Override
+		public void onCheckedChanged(CompoundButton buttonView,
+				boolean isChecked) {
+
+			switch (buttonView.getId()) {
+			case R.id.save_login_credentials_box:
+				if (isChecked) {
+					loginDetails.setVisibility(View.VISIBLE);
+					usernameView.setVisibility(View.VISIBLE);
+					passwordView.setVisibility(View.VISIBLE);
+				} else {
+					loginDetails.setVisibility(View.GONE);
+					usernameView.setVisibility(View.GONE);
+					passwordView.setVisibility(View.GONE);
+				}
+			}
+		}
+	}
+
+	boolean isValidInput(String connectionURL, String connectionName,
+			String username, String password) {
+		return true;
 	}
 
 	boolean isValidConnection(ConnectionInfo connection) {

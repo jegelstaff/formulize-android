@@ -1,17 +1,43 @@
 ## Current Tasks
- Do we need to break up menu links requests by application instead of querying the entire structure?
- General forms, how do we retrieve those?
- 
-### Retrieving Menu Information
-[10/25/2013, 16:41:16 ] Julian Egelstaff: Yeah...you should write a PHP file that will live on the server, and you can hit that from the mobile client, and this PHP file should have include "mainfile.php"; at the top, so it will check the session and all that, and then you want to use the API in the class/application.php file where the menu handler is, and gather the data about the menu entries, and pass that back to the client as json or xml or whatever is easy for the https://github.com/eikonos/Off-Roadclient to process, because we'll need to use that info to build the menu on the client.
-[10/25/2013, 16:41:47 ] Julian Egelstaff: Wejdan may be able to point you in the right direction re: the API, because she's the most recent one to work with it.
+Do we wnat to show links that show entries? (rather than just forms?)
+### Create input validations for adding connections
 
-#### Create a data representation of Applications and screens in mobile clients
-* Need to check what attributes an application/screen needs to contain
-* Using [Google GSON](https://code.google.com/p/google-gson/) to parse JSON objects received by the server.
-*
+### Better Information on connection info
+* Try showing the username, and URL of the connection in addition to the name
+### Validate whether user is connecting to an actual Formulize server
 
-#### Create a new PHP file, a new GET handler that returns a JSON/XML representation of the application information on the server.
+### Support Edit/Delete Connections
+
+### Refactor how asynchronous connections are done
+* Create Handler class that Activities could pass themselves into
+* Handlers can be passed to asynchronous calls, so once they are complete, they could pass the results into handlers
+* Handlers will basically handle the message and manipulate the activity context as needed
+
+### Check for servers that don't have any applications available to the user
+* If this happens, politely escort them back to the connection menu, and ask them to contact the webmaster.
+
+### When the user re-opens the application, log back in to their last application
+
+### Cache the menu links retrieved from the server for better performance
+* When the user logs in, it should first query the contents of the cache for the list of applications
+* Then retrieve the results from network asynchronously, and update the list if there are changes compared to the cache.
+
+## Completed Tasks
+* Have a activity for setting up multiple Formulize sites:
+	* URL
+	* Name
+	* Options
+	* Usernames, Passwords
+
+### Have working login workflow
+* Implement Method to retrieve connections selected from the list
+	* When there is now username specified in the login connection, ask for login
+	* Otherwise login automatically
+	* If there is a bad password/username, prompt for login credentials again
+
+### Create a new PHP file, a new GET handler that returns a JSON/XML representation of the application information on the server.
+* This is done with the `app_list.php` file on the server side code.
+* The file uses the application_handler object, it basically strips out the unnecessary information from xoops objects and encodes it in JSON.
 
 ### Getting user login token from a Formulize Server
 
@@ -28,27 +54,7 @@ In Android `HttpURLConnection` is used to [make network requests](http://develop
 * How to deal with network that redirect users to a sign-in page?
 * Currently all testing is done on Formulize running on ICMS, does the sign in process need to change on Joomla, Wordpress etc.?
 * It seems like ICMS sets a ICMSSESSION cookie even when the user is not logged in. When I login directly with `HttpURLConnection`, there's I get two `ICMSSESSION` cookies, presumably one for the login, the other for the "unlogged" one.
-
-### Create input validations for adding connections, login
-
-### Saving Application State
-
-In Android, applications should expect that their processes can be freed and destroyed at any time. (Users might put the phone to sleep, get a phone call etc.)
-
-Not much thought has been put in handling these cases yet, this causes a bug in the `ScreenListActivity` where the title can disappear when the activity has been freed once since it is set dynamically in the code.
-
-## Completed Tasks
-* Have a activity for setting up multiple Formulize sites:
-	* URL
-	* Name
-	* Options
-	* Usernames, Passwords
-
-* Implement Method to retrieve connections selected from the list
-* Have working login workflow
-	* When there is now username specified in the login connection, ask for login
-	* Otherwise login automatically
-	* If there is a bad password/username, prompt for login credentials again
+* When should the list be refreshed once retrieved?
 
 ## Things to be done later
 

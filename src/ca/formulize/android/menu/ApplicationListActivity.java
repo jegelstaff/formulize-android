@@ -13,7 +13,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -35,10 +34,6 @@ public class ApplicationListActivity extends FragmentActivity {
 
 	public static final String APPLICATIONS = "ca.formulize.android.menu.ApplicationListActivity.applications";
 
-	// Temporary hard coded variables for prototyping
-	public static final String TEST_JSON = "[{\"appid\":\"1\",\"name\":\"Application1\",\"description\":false,\"links\":[{\"menu_id\":\"3\",\"appid\":\"1\",\"screen\":\"fid=2\",\"rank\":\"1\",\"url\":\"\",\"link_text\":\"testFormLink\",\"name\":null,\"text\":\"testFormLink\"},{\"menu_id\":\"4\",\"appid\":\"1\",\"screen\":\"sid=1\",\"rank\":\"2\",\"url\":\"\",\"link_text\":\"Fruity Form\",\"name\":null,\"text\":\"Fruity Form\"},{\"menu_id\":\"5\",\"appid\":\"1\",\"screen\":\"sid=5\",\"rank\":\"4\",\"url\":\"\",\"link_text\":\"Mobile Form\",\"name\":null,\"text\":\"Mobile Form\"}]},{\"appid\":\"2\",\"name\":\"The Second Application\",\"description\":false,\"links\":[{\"menu_id\":\"9\",\"appid\":\"2\",\"screen\":\"sid=7\",\"rank\":\"1\",\"url\":\"\",\"link_text\":\"For Students\",\"name\":null,\"text\":\"For Students\"},{\"menu_id\":\"11\",\"appid\":\"2\",\"screen\":\"sid=9\",\"rank\":\"3\",\"url\":\"\",\"link_text\":\"Anyone can see this form\",\"name\":null,\"text\":\"Anyone can see this form\"}]}]";
-	public static final String TEST_LINK = "ca.formulize.android.menu.testLink";
-
 	public FormulizeApplication[] applications;
 	private ArrayAdapter<FormulizeApplication> applicationListAdapter;
 	private ListView applicationListView;
@@ -46,22 +41,17 @@ public class ApplicationListActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_application_list);
+		super.onCreate(savedInstanceState);	
+		applicationListView = new ListView(this);
+		setContentView(applicationListView);
+		
+		applicationListView
+		.setOnItemClickListener(new ApplicationListClickListener());
 
 		// Get available applications from current user
 		connectionInfo = FUserSession.getInstance().getConnectionInfo();
 		new MenuListRequestTask(this).execute(connectionInfo);
 		
-		
-//		applicationListAdapter = new ArrayAdapter<FormulizeApplication>(this,
-//				android.R.layout.simple_list_item_1, new FormulizeApplication[1]);
-//
-//		// Set ListView adapter and click listener
-//		applicationListView = (ListView) findViewById(R.id.applicationList);
-//		applicationListView.setAdapter(applicationListAdapter);
-//		applicationListView
-//				.setOnItemClickListener(new ApplicationListClickListener());
 	}
 
 	@Override
@@ -174,10 +164,7 @@ public class ApplicationListActivity extends FragmentActivity {
 						android.R.layout.simple_list_item_1, applications);
 
 				// Set ListView adapter and click listener
-				applicationListView = (ListView) findViewById(R.id.applicationList);
 				applicationListView.setAdapter(applicationListAdapter);
-				applicationListView
-						.setOnItemClickListener(new ApplicationListClickListener());
 			}
 		}
 
