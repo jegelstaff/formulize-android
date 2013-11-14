@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -101,22 +102,20 @@ public class AddConnectionActivity extends FragmentActivity {
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.saveConnection:
+			connectionURLView.setError(null);
+			connectionNameView.setError(null);
+			usernameView.setError(null);
+			passwordView.setError(null);
+
 			connectionURL = connectionURLView.getText().toString();
 			connectionName = connectionNameView.getText().toString();
 			username = usernameView.getText().toString();
 			password = passwordView.getText().toString();
 
-			// TODO: Validate Connection Form
-
-			// TODO: Validate if connection is valid address to
-			// TODO: If entered, validate connection login
-
-			// TODO: If Valid, add connection and login to database
-
 			ConnectionInfo connectionInfo = new ConnectionInfo(connectionURL,
 					connectionName, username, password);
 
-			if (isValidConnection(connectionInfo)) {
+			if (isValidInput()) {
 				addConnection(connectionInfo);
 
 				// Return to the connection list
@@ -129,14 +128,18 @@ public class AddConnectionActivity extends FragmentActivity {
 				startActivity(connectionListIntent);
 
 			} else {
-				connectionURLView.setError("Invalid Connection URL");
+				return false;
 			}
 
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Check box listener for 
+	 * @author timch326
+	 *
+	 */
 	private class onCheckBoxClickedListener implements OnCheckedChangeListener {
 
 		@Override
@@ -158,9 +161,44 @@ public class AddConnectionActivity extends FragmentActivity {
 		}
 	}
 
-	boolean isValidInput(String connectionURL, String connectionName,
-			String username, String password) {
-		return true;
+	/**
+	 * Checks the validity of the input the user has entered
+	 * 
+	 * @return the validity of the inputs
+	 */
+	boolean isValidInput() {
+
+		boolean isValid = true;
+		
+		// Check for empty textboxes
+		if ("".equals(connectionName)) {
+			connectionNameView.setError("Enter a connection name");
+			isValid = false;
+		}
+		if (saveLoginCredentialsView.isChecked()) {
+			if ("".equals(username)) {
+				usernameView.setError("Enter an username");
+				isValid = false;
+			}
+			if ("".equals(password)) {
+				passwordView.setError("Enter a password");
+				isValid = false;
+			}
+		}
+		
+		// Append "http://" to URL if necessary
+		if (!connectionURL.startsWith("http://")) {
+			connectionURL = "http://" + connectionURL;
+		}
+		if (!connectionURL.endsWith("/")) {
+			connectionURL += "/";
+		}
+		// Validate HTTP URL
+		if (!connectionURL.matches(Patterns.WEB_URL.toString())) {
+			connectionURLView.setError("Enter a valid URL");
+			isValid = false;
+		}
+		return isValid;
 	}
 
 	boolean isValidConnection(ConnectionInfo connection) {
