@@ -29,7 +29,7 @@
             android:id="@+id/accountDetailsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/account_details_title"
+            android:text="@string/login_title"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
@@ -37,7 +37,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/formulize_url_hint" />
+            android:hint="@string/connection_url_hint" />
 
         <EditText
             android:id="@+id/usernameText"

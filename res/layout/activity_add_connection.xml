@@ -18,14 +18,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:text="CONNECTION"
+                android:text="@string/connection_title"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <EditText
                 android:id="@+id/connection_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="URL"
+                android:hint="@string/connection_url_hint"
                 android:inputType="textUri"
                 android:maxLines="1"
                 android:singleLine="true" />
@@ -34,7 +34,7 @@
                 android:id="@+id/connection_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Connection Name"
+                android:hint="@string/connection_name_hint"
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true" />
@@ -43,14 +43,14 @@
                 android:id="@+id/save_login_credentials_box"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save username and password"/>
+                android:text="@string/save_login_credentials_text"/>
             
             <TextView
                 android:id="@+id/login_details"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="left"
-                android:text="LOGIN DETAILS"
+                android:text="@string/login_title"
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:visibility="gone" />
 
@@ -58,7 +58,7 @@
                 android:id="@+id/username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/prompt_username"
+                android:hint="@string/username_hint"
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true"
@@ -68,7 +68,7 @@
                 android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
+                android:hint="@string/password_hint"
                 android:inputType="textPassword"
                 android:maxLines="1"
                 android:singleLine="true"

@@ -1,6 +1,6 @@
 ## Current Tasks
-Do we wnat to show links that show entries? (rather than just forms?)
-### Create input validations for adding connections
+
+### Check if there is internet connection before logging in!
 
 ### Better Information on connection info
 * Try showing the username, and URL of the connection in addition to the name
@@ -55,6 +55,8 @@ In Android `HttpURLConnection` is used to [make network requests](http://develop
 * Currently all testing is done on Formulize running on ICMS, does the sign in process need to change on Joomla, Wordpress etc.?
 * It seems like ICMS sets a ICMSSESSION cookie even when the user is not logged in. When I login directly with `HttpURLConnection`, there's I get two `ICMSSESSION` cookies, presumably one for the login, the other for the "unlogged" one.
 * When should the list be refreshed once retrieved?
+
+### Create input validations for adding connections
 
 ## Things to be done later
 

@@ -3,6 +3,7 @@ package ca.formulize.android.menu;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
@@ -49,19 +50,21 @@ public class ScreenListActivity extends Activity {
 		linksListView.setOnItemClickListener(new ScreenListClickListener());
 		setContentView(linksListView);
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
-		
-		savedInstanceState.putParcelable(CURRENT_APPLICATION, currentApplication);
+
+		savedInstanceState.putParcelable(CURRENT_APPLICATION,
+				currentApplication);
 	}
-	
+
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-	  super.onRestoreInstanceState(savedInstanceState);
-	  
-	  currentApplication = savedInstanceState.getParcelable(CURRENT_APPLICATION);
+		super.onRestoreInstanceState(savedInstanceState);
+
+		currentApplication = savedInstanceState
+				.getParcelable(CURRENT_APPLICATION);
 	}
 
 	/**
@@ -85,7 +88,7 @@ public class ScreenListActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			//NavUtils.navigateUpFromSameTask(this);
+			// NavUtils.navigateUpFromSameTask(this);
 			onBackPressed();
 			return true;
 		}
@@ -103,8 +106,22 @@ public class ScreenListActivity extends Activity {
 					.getItem(position);
 			Intent screenList = new Intent(ScreenListActivity.this,
 					ScreenWebActivity.class);
-			screenList.putExtra(ScreenWebActivity.SID, selectedLink.getScreen());
-			startActivity(screenList);
+
+			// Check if the selected screen is an external link, open browser if
+			// that's the case
+			String screen = selectedLink.getScreen();
+			if (!screen.startsWith("fid") && !screen.startsWith("sid")) {
+				String url = selectedLink.getUrl();
+				if (!url.startsWith("http://") && !url.startsWith("https://"))
+					url = "http://" + url;
+				Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+						Uri.parse(url));
+				startActivity(browserIntent);
+			} else {
+				screenList.putExtra(ScreenWebActivity.SID,
+						selectedLink.getScreen());
+				startActivity(screenList);
+			}
 
 		}
 	}

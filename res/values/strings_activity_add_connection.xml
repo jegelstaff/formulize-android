@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Strings related to login -->
     <string name="title_activity_add_connection">Add a Connection</string>
-    <string name="prompt_username">Username</string>
-    <string name="login_progress_signing_in">Signing in</string>
-    
 
+    <string name="login_progress_logging_in">Logging in</string>
+    
+    <string name="login_title">LOGIN</string>
+    <string name="connection_title">CONNECTION</string>
+    
+    <string name="connection_url_hint">URL</string>
+    <string name="connection_name_hint">Connection Name</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+        
+    <string name="save_login_credentials_text">Save username and password</string>
+    
 </resources>

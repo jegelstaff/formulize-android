@@ -1,9 +1,7 @@
 package ca.formulize.android.connection;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.CookieHandler;
@@ -24,10 +22,6 @@ import android.util.Log;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.menu.ApplicationListActivity;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public class FUserSession {
 	public final static String LOGIN_FAILED = "Login has failed";
@@ -207,7 +201,6 @@ public class FUserSession {
 				}
 
 			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 

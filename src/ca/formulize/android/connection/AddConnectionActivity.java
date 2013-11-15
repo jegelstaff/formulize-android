@@ -112,10 +112,11 @@ public class AddConnectionActivity extends FragmentActivity {
 			username = usernameView.getText().toString();
 			password = passwordView.getText().toString();
 
-			ConnectionInfo connectionInfo = new ConnectionInfo(connectionURL,
-					connectionName, username, password);
-
 			if (isValidInput()) {
+
+				ConnectionInfo connectionInfo = new ConnectionInfo(
+						connectionURL, connectionName, username, password);
+
 				addConnection(connectionInfo);
 
 				// Return to the connection list
@@ -136,9 +137,10 @@ public class AddConnectionActivity extends FragmentActivity {
 	}
 
 	/**
-	 * Check box listener for 
+	 * Check box listener for
+	 * 
 	 * @author timch326
-	 *
+	 * 
 	 */
 	private class onCheckBoxClickedListener implements OnCheckedChangeListener {
 
@@ -162,14 +164,15 @@ public class AddConnectionActivity extends FragmentActivity {
 	}
 
 	/**
-	 * Checks the validity of the input the user has entered
+	 * Checks the validity of the input the user has entered. It also modifies
+	 * connectionURL so some URLs (e.g. add http://)
 	 * 
 	 * @return the validity of the inputs
 	 */
 	boolean isValidInput() {
 
 		boolean isValid = true;
-		
+
 		// Check for empty textboxes
 		if ("".equals(connectionName)) {
 			connectionNameView.setError("Enter a connection name");
@@ -185,9 +188,9 @@ public class AddConnectionActivity extends FragmentActivity {
 				isValid = false;
 			}
 		}
-		
+
 		// Append "http://" to URL if necessary
-		if (!connectionURL.startsWith("http://")) {
+		if (!connectionURL.startsWith("http://") && !connectionURL.startsWith("https://")) {
 			connectionURL = "http://" + connectionURL;
 		}
 		if (!connectionURL.endsWith("/")) {
