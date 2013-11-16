@@ -2,12 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/connectionName"
-        android:layout_width="wrap_content"
+        android:id="@+id/connection_name"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="" />
+        android:gravity="center_vertical"
+        android:paddingLeft="6dip"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Connection Name" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingLeft="6dip"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Username" />
 
 </LinearLayout>

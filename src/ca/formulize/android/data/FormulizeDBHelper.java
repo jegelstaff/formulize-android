@@ -72,12 +72,30 @@ public class FormulizeDBHelper extends SQLiteOpenHelper {
 	}
 
 	/**
-	 * Returns a cursor that selects all the connection info entries saved in
-	 * the database
+	 * Deletes a single connection from the database
 	 * 
-	 * @return a cursor containing all saved connection info
+	 * @param connectionID
+	 *            the id of the connection to be deleted
+	 * @return The number of connections deleted
 	 */
-	public Cursor getConnectionList() {
+	public int deleteConnection(long connectionID) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String[] args = { Long.toString(connectionID) };
+		return db.delete(ConnectionEntry.TABLE_NAME, "_id = ?", args);
+	}
+
+	/**
+	 * Returns a cursor that selects all the connection info entries saved in
+	 * the database. If connection id is specified, it only returns the
+	 * connection info with that id.
+	 * 
+	 * @param connnectionID
+	 *            the id of the connection to be selected.
+	 * @return a cursor containing all saved connection info if the connectionID
+	 *         is less than 0. Otherwise it would only contain the connection
+	 *         info with the id specified.
+	 */
+	public Cursor getConnectionList(long connectionID) {
 		String[] projection = { ConnectionEntry._ID,
 				ConnectionEntry.COLUMN_NAME_CONNECTION_URL,
 				ConnectionEntry.COLUMN_NAME_CONNECTION_NAME,
@@ -85,10 +103,76 @@ public class FormulizeDBHelper extends SQLiteOpenHelper {
 				ConnectionEntry.COLUMN_NAME_PASSWORD };
 
 		String sortOrder = ConnectionEntry._ID;
+		String[] args = { Long.toString(connectionID) };
 
 		SQLiteDatabase db = this.getReadableDatabase();
-		return db.query(ConnectionEntry.TABLE_NAME, projection, null, null,
-				null, null, sortOrder);
+
+		if (connectionID < 0) {
+			return db.query(ConnectionEntry.TABLE_NAME, projection, null, null,
+					null, null, sortOrder);
+		} else {
+			return db.query(ConnectionEntry.TABLE_NAME, projection, "_id = ?",
+					args, null, null, sortOrder);
+		}
+	}
+
+	/**
+	 * Returns a ConnectionInfo with the specified connection id from that
+	 * database.
+	 * 
+	 * @param selectedConnectionID
+	 *            the id of the connection info
+	 * @return ConnectionInfo with the id specified, it returns null if there is
+	 *         no connection with that id
+	 */
+	public ConnectionInfo getConnection(long selectedConnectionID) {
+		Cursor cursor = getConnectionList(selectedConnectionID);
+
+		if (cursor.getCount() > 0) {
+
+			cursor.moveToFirst();
+
+			int connectionURLIndex = cursor
+					.getColumnIndex(ConnectionEntry.COLUMN_NAME_CONNECTION_URL);
+			int connectionNameIndex = cursor
+					.getColumnIndex(ConnectionEntry.COLUMN_NAME_CONNECTION_NAME);
+			int usernameIndex = cursor
+					.getColumnIndex(ConnectionEntry.COLUMN_NAME_USERNAME);
+			int passwordIndex = cursor
+					.getColumnIndex(ConnectionEntry.COLUMN_NAME_PASSWORD);
+
+			return new ConnectionInfo(cursor.getString(connectionURLIndex),
+					cursor.getString(connectionNameIndex),
+					cursor.getString(usernameIndex),
+					cursor.getString(passwordIndex));
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Updates a connection info by replacing the current info with the
+	 * connection info specified.
+	 * 
+	 * @param connectionInfo new Connection Info specified
+	 * @param connectionID the connection to be updated
+	 * @return indicates update has been successful if it is 1, else it failed
+	 */
+	public int updateConnectionInfo(ConnectionInfo connectionInfo, long connectionID) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		
+		ContentValues values = new ContentValues();
+		values.put(ConnectionEntry.COLUMN_NAME_CONNECTION_NAME,
+				connectionInfo.getConnectionName());
+		values.put(ConnectionEntry.COLUMN_NAME_CONNECTION_URL,
+				connectionInfo.getConnectionURL());
+		values.put(ConnectionEntry.COLUMN_NAME_USERNAME,
+				connectionInfo.getUsername());
+		values.put(ConnectionEntry.COLUMN_NAME_PASSWORD,
+				connectionInfo.getPassword());
+		String[] args = { Long.toString(connectionID) };
+		
+		return db.update(ConnectionEntry.TABLE_NAME, values, "_id = ?", args);
 	}
 
 }

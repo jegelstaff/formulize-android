@@ -2,7 +2,8 @@
 <resources>
 
     <!-- Strings related to login -->
-    <string name="title_activity_add_connection">Add a Connection</string>
+    <string name="title_activity_add_connection">Add Connection</string>
+    <string name="title_activity_edit_connection">Edit Connection</string>
 
     <string name="login_progress_logging_in">Logging in</string>
     

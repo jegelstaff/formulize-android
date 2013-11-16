@@ -10,7 +10,6 @@ import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
@@ -22,26 +21,31 @@ import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBHelper;
 
 /**
- * Represents the screen that allows users to create new connections to a
+ * Represents the screen that allows users to create or edit connections to a
  * Formulize server. Connections are saved once they are submitted and
  * validated.
+ * 
+ * If no parameters are passed through the intent, the activity will assume a
+ * connection is to be added by the user.
+ * 
+ * By passing an id of a connection info through the intent to this activity,
+ * the activity will retrieve the contents of the connection with that id, and
+ * allow the user to modify and update it.
  * 
  * @author timch326
  * 
  */
 public class AddConnectionActivity extends FragmentActivity {
 
-	// Values to populate form with for editing connections
-	public final static String EXTRA_CONNECTION_URL = "ca.formulize.android.extra.connectionURL";
-	public final static String EXTRA_CONNECTION_NAME = "ca.formulize.android.extra.connectionName";
-	public final static String EXTRA_USERNAME = "ca.formulize.android.extra.username";
-	public final static String EXTRA_PASSWORD = "ca.formulize.android.extra.password";
+	// Extra parameter to allow connections to be edited
+	public static final String EXTRA_CONNECTION_ID = "ca.formulize.android.extra.connectionID";
 
 	// Values for connection information
 	private String connectionURL;
 	private String connectionName;
 	private String username;
 	private String password;
+	private long selectedConnectionID;
 
 	// UI References
 	private EditText connectionURLView;
@@ -59,16 +63,34 @@ public class AddConnectionActivity extends FragmentActivity {
 		setupActionBar();
 
 		// Set up connection form
-		// TODO: Set up connection values if they exist to allow edits
 		connectionURLView = (EditText) findViewById(R.id.connection_url);
 		connectionNameView = (EditText) findViewById(R.id.connection_name);
 		saveLoginCredentialsView = (CheckBox) findViewById(R.id.save_login_credentials_box);
 		loginDetails = (TextView) findViewById(R.id.login_details);
 		usernameView = (EditText) findViewById(R.id.username);
 		passwordView = (EditText) findViewById(R.id.password);
-
 		saveLoginCredentialsView
 				.setOnCheckedChangeListener(new onCheckBoxClickedListener());
+
+		// If a connection id is given from intent, the activity needs to edit a
+		// connection
+		selectedConnectionID = getIntent()
+				.getLongExtra(EXTRA_CONNECTION_ID, -1);
+
+		if (selectedConnectionID >= 0) {
+			FormulizeDBHelper dbHelper = new FormulizeDBHelper(this);
+			ConnectionInfo connection = dbHelper
+					.getConnection(selectedConnectionID);
+			connectionURLView.setText(connection.getConnectionURL());
+			connectionNameView.setText(connection.getConnectionName());
+
+			if (!connection.getUsername().equals("")) {
+				saveLoginCredentialsView.setChecked(true);
+				usernameView.setText(connection.getUsername());
+				passwordView.setText(connection.getPassword());
+			}
+			setTitle(R.string.title_activity_edit_connection);
+		}
 	}
 
 	/**
@@ -117,13 +139,19 @@ public class AddConnectionActivity extends FragmentActivity {
 				ConnectionInfo connectionInfo = new ConnectionInfo(
 						connectionURL, connectionName, username, password);
 
-				addConnection(connectionInfo);
-
-				// Return to the connection list
-				Toast connectionToast = Toast.makeText(this,
-						"Connection Added", Toast.LENGTH_SHORT);
-				connectionToast.show();
-
+				// Add a new connection or modify an existing one depending on
+				// whether there has been a selected connection id
+				if (selectedConnectionID >= 0) {
+					modifyConnection(connectionInfo, selectedConnectionID);
+					Toast connectionToast = Toast.makeText(this,
+							"Connection Updated", Toast.LENGTH_SHORT);
+					connectionToast.show();
+				} else {
+					addConnection(connectionInfo);
+					Toast connectionToast = Toast.makeText(this,
+							"Connection Added", Toast.LENGTH_SHORT);
+					connectionToast.show();
+				}
 				Intent connectionListIntent = new Intent(
 						AddConnectionActivity.this, ConnectionActivity.class);
 				startActivity(connectionListIntent);
@@ -190,7 +218,8 @@ public class AddConnectionActivity extends FragmentActivity {
 		}
 
 		// Append "http://" to URL if necessary
-		if (!connectionURL.startsWith("http://") && !connectionURL.startsWith("https://")) {
+		if (!connectionURL.startsWith("http://")
+				&& !connectionURL.startsWith("https://")) {
 			connectionURL = "http://" + connectionURL;
 		}
 		if (!connectionURL.endsWith("/")) {
@@ -212,5 +241,10 @@ public class AddConnectionActivity extends FragmentActivity {
 	private void addConnection(ConnectionInfo connection) {
 		FormulizeDBHelper dbHelper = new FormulizeDBHelper(this);
 		dbHelper.insertConnectionInfo(connection);
+	}
+
+	private void modifyConnection(ConnectionInfo connection, long connectionID) {
+		FormulizeDBHelper dbHelper = new FormulizeDBHelper(this);
+		dbHelper.updateConnectionInfo(connection, connectionID);
 	}
 }
