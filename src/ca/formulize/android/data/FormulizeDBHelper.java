@@ -171,7 +171,6 @@ public class FormulizeDBHelper extends SQLiteOpenHelper {
 		values.put(ConnectionEntry.COLUMN_NAME_PASSWORD,
 				connectionInfo.getPassword());
 		String[] args = { Long.toString(connectionID) };
-		
 		return db.update(ConnectionEntry.TABLE_NAME, values, "_id = ?", args);
 	}
 

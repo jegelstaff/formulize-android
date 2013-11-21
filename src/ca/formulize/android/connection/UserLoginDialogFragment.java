@@ -2,8 +2,10 @@ package ca.formulize.android.connection;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +37,7 @@ public class UserLoginDialogFragment extends DialogFragment {
 	private TextView errorMessageView;
 	private EditText usernameView;
 	private EditText passwordView;
-
+	
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -77,6 +79,7 @@ public class UserLoginDialogFragment extends DialogFragment {
 						}).setTitle(R.string.sign_in_label);
 
 		final AlertDialog alertDialog = builder.create();
+		
 
 		// Override standard dialog positive button behaviour
 		alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -95,8 +98,13 @@ public class UserLoginDialogFragment extends DialogFragment {
 
 						if (isValidInput()) {
 							FUserSession session = FUserSession.getInstance();
-							session.createConnection(getActivity(),
-									connectionInfo);
+							//session.createConnection(getActivity(),connectionInfo);
+							ProgressDialog progressDialog = new ProgressDialog(UserLoginDialogFragment.this.getActivity());
+							progressDialog.setMessage("Logging in");
+							progressDialog.show();
+							Handler handler = new ConnectionActivity.LoginHandler(UserLoginDialogFragment.this.getActivity(), connectionInfo, progressDialog);
+							Runnable loginRunnable = new UserLoginAsyncTask(connectionInfo, handler);
+							new Thread(loginRunnable).start();
 						}
 					}
 				});

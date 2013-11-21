@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -131,8 +132,14 @@ public class AddConnectionActivity extends FragmentActivity {
 
 			connectionURL = connectionURLView.getText().toString();
 			connectionName = connectionNameView.getText().toString();
-			username = usernameView.getText().toString();
-			password = passwordView.getText().toString();
+			
+			if (saveLoginCredentialsView.isChecked()) {
+				username = usernameView.getText().toString();
+				password = passwordView.getText().toString();
+			} else {
+				username = "";
+				password = "";
+			}
 
 			if (isValidInput()) {
 
@@ -245,6 +252,7 @@ public class AddConnectionActivity extends FragmentActivity {
 
 	private void modifyConnection(ConnectionInfo connection, long connectionID) {
 		FormulizeDBHelper dbHelper = new FormulizeDBHelper(this);
-		dbHelper.updateConnectionInfo(connection, connectionID);
+		int result = dbHelper.updateConnectionInfo(connection, connectionID);
+		Log.d("Formulize", "Updated connection" + result);
 	}
 }

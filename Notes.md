@@ -1,5 +1,7 @@
 ## Current Tasks
 
+### Keep login alive while Formulize is open
+
 ### Check if there is internet connection before logging in!
 
 ### Better Information on connection info
@@ -21,6 +23,8 @@
 ### Cache the menu links retrieved from the server for better performance
 * When the user logs in, it should first query the contents of the cache for the list of applications
 * Then retrieve the results from network asynchronously, and update the list if there are changes compared to the cache.
+
+### Take advantage of Fragments in Android to show a side bar of applications in the screen view on tablets?
 
 ## Completed Tasks
 * Have a activity for setting up multiple Formulize sites:
@@ -60,6 +64,7 @@ In Android `HttpURLConnection` is used to [make network requests](http://develop
 
 ## Things to be done later
 
+### Change how forms and entry screens are displayed for mobile clients
 ### Android AsyncTask and LoginTask
 To handle asynchronous tasks such as network calls, Android encourages the use of `AsyncTask` [in its library](https://developer.android.com/reference/android/os/AsyncTask.html). However, the Android Application Lifecycle does not automatically preserve asynchronous tasks when an activity is destroyed (e.g. when the user changes screen orientantion) hence `AsyncTask` objects need to be attached to [Android Fragments](https://developer.android.com/guide/components/fragments.html). Android allows some Fragments to be retained so it can bypass Android's destroy-create cycle, so AsyncTasks can be preserved by being attached to them. [(Source)](http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html)
 

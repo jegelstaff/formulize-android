@@ -1,8 +1,11 @@
 package ca.formulize.android.connection;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -21,6 +24,7 @@ import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBContract.ConnectionEntry;
 import ca.formulize.android.data.FormulizeDBHelper;
+import ca.formulize.android.menu.ApplicationListActivity;
 
 /**
  * Represents the connection list screen where users can choose from a list of
@@ -32,9 +36,13 @@ import ca.formulize.android.data.FormulizeDBHelper;
  */
 public class ConnectionActivity extends FragmentActivity {
 
+	// UI References
 	private ListView connectionList;
 	private FormulizeDBHelper dbHelper;
 	private SimpleCursorAdapter connectionAdapter;
+	private ProgressDialog progressDialog;
+
+	private ConnectionInfo selectedConnection;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -136,14 +144,38 @@ public class ConnectionActivity extends FragmentActivity {
 			String password = cursor.getString(cursor
 					.getColumnIndex(ConnectionEntry.COLUMN_NAME_PASSWORD));
 
-			ConnectionInfo connectionInfo = new ConnectionInfo(connectionURL,
+			selectedConnection = new ConnectionInfo(connectionURL,
 					connectionName, username, password);
+
 			Log.d("Formulize", "Connection Selected");
-			FUserSession session = FUserSession.getInstance();
 
-			// Start Async Login, go to Application List if successful
-			session.createConnection(ConnectionActivity.this, connectionInfo);
+			// If no user name is in the connection info, prompt for login
+			if (selectedConnection.getUsername() == null
+					|| selectedConnection.getUsername().equals("")) {
+				UserLoginDialogFragment loginDialog = new UserLoginDialogFragment();
+				Bundle args = new Bundle();
+				args.putParcelable(
+						UserLoginDialogFragment.EXTRA_CONNECITON_INFO,
+						selectedConnection);
+				loginDialog.setArguments(args);
+				loginDialog.show(ConnectionActivity.this.getSupportFragmentManager(), "login");
+			} else {
+				// FUserSession session = FUserSession.getInstance();
 
+				// Start Async Login, go to Application List if successful
+				// session.createConnection(ConnectionActivity.this,
+				// selectedConnection);
+				progressDialog = new ProgressDialog(ConnectionActivity.this);
+				progressDialog.setMessage("Logging in");
+				progressDialog.show();
+
+				Runnable loginTask = new UserLoginAsyncTask(selectedConnection,
+						new LoginHandler(ConnectionActivity.this,
+								selectedConnection, progressDialog));
+				Thread loginThread = new Thread(loginTask);
+
+				loginThread.start();
+			}
 		}
 	}
 
@@ -161,5 +193,59 @@ public class ConnectionActivity extends FragmentActivity {
 				connectionID);
 		startActivity(addConnectionIntent);
 	}
+
+	// Define the Handler that receives messages from the thread and update the
+	// progress
+	public static class LoginHandler extends Handler {
+
+		private final ConnectionInfo selectedConnection;
+		private final FragmentActivity activity;
+		private final ProgressDialog progressDialog;
+
+		public LoginHandler(FragmentActivity activity,
+				ConnectionInfo selectedConnection, ProgressDialog progressDialog) {
+			super();
+			this.selectedConnection = selectedConnection;
+			this.progressDialog = progressDialog;
+			this.activity = activity;
+
+		}
+
+		public void handleMessage(Message msg) {
+
+			if (progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
+
+			String result = msg.getData().getString(
+					UserLoginAsyncTask.EXTRA_LOGIN_RESPONSE_MSG);
+
+			// Bad server Connection
+			if (result == null)
+				Log.d("Formulize", "Connection Failed");
+
+			// Ask for credentials again if they were incorrect
+			else if (result == UserLoginAsyncTask.LOGIN_UNSUCESSFUL_MSG) {
+				UserLoginDialogFragment loginDialog = new UserLoginDialogFragment();
+				Bundle args = new Bundle();
+				args.putParcelable(
+						UserLoginDialogFragment.EXTRA_CONNECITON_INFO,
+						selectedConnection);
+				args.putBoolean(UserLoginDialogFragment.EXTRA_IS_REATTEMPT,
+						true);
+				loginDialog.setArguments(args);
+				loginDialog.show(activity.getSupportFragmentManager(), "login");
+			} else if (result == UserLoginAsyncTask.LOGIN_SUCESSFUL_MSG) {
+				Log.d("Formulize", result);
+				FUserSession.getInstance()
+						.setConnectionInfo(selectedConnection);
+
+				// Go to application list once logged in
+				Intent viewApplicationsIntent = new Intent(activity,
+						ApplicationListActivity.class);
+				activity.startActivity(viewApplicationsIntent);
+			}
+		}
+	};
 
 }
