@@ -1,24 +1,22 @@
 ## Current Tasks
 
-### Keep login alive while Formulize is open
+### Check for servers that don't have any applications available to the user
+* If this happens, politely escort them back to the connection menu, and ask them to contact the webmaster.
+
+### Add a logout button within the menu, screen
+
+### When the user re-opens the application, log back in to their last application
 
 ### Check if there is internet connection before logging in!
 
-### Better Information on connection info
-* Try showing the username, and URL of the connection in addition to the name
-### Validate whether user is connecting to an actual Formulize server
+### Keep login alive while Formulize is open
 
-### Support Edit/Delete Connections
+### Validate whether user is connecting to an actual Formulize server
 
 ### Refactor how asynchronous connections are done
 * Create Handler class that Activities could pass themselves into
 * Handlers can be passed to asynchronous calls, so once they are complete, they could pass the results into handlers
 * Handlers will basically handle the message and manipulate the activity context as needed
-
-### Check for servers that don't have any applications available to the user
-* If this happens, politely escort them back to the connection menu, and ask them to contact the webmaster.
-
-### When the user re-opens the application, log back in to their last application
 
 ### Cache the menu links retrieved from the server for better performance
 * When the user logs in, it should first query the contents of the cache for the list of applications
@@ -32,6 +30,9 @@
 	* Name
 	* Options
 	* Usernames, Passwords
+
+### Better Information on connection info
+* Try showing the username, and URL of the connection in addition to the name
 
 ### Have working login workflow
 * Implement Method to retrieve connections selected from the list
@@ -62,9 +63,12 @@ In Android `HttpURLConnection` is used to [make network requests](http://develop
 
 ### Create input validations for adding connections
 
+### Support Edit/Delete Connections
+
 ## Things to be done later
 
 ### Change how forms and entry screens are displayed for mobile clients
+
 ### Android AsyncTask and LoginTask
 To handle asynchronous tasks such as network calls, Android encourages the use of `AsyncTask` [in its library](https://developer.android.com/reference/android/os/AsyncTask.html). However, the Android Application Lifecycle does not automatically preserve asynchronous tasks when an activity is destroyed (e.g. when the user changes screen orientantion) hence `AsyncTask` objects need to be attached to [Android Fragments](https://developer.android.com/guide/components/fragments.html). Android allows some Fragments to be retained so it can bypass Android's destroy-create cycle, so AsyncTasks can be preserved by being attached to them. [(Source)](http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html)
 
@@ -79,11 +83,3 @@ To handle asynchronous tasks such as network calls, Android encourages the use o
 In Android versions 3.0 or later, the use of the [contextual action bar](https://developer.android.com/guide/topics/ui/menus.html#CAB) is encouraged when the users need to be able to perform actions on particular objects in the application. For our case, that would be editing or deleting connections from a list. However, I realized that Android does not support these feature in their APIs before version 3.0. Since Android 2.2, 2.3 still has ~30% of the [Android market share](https://developer.android.com/about/dashboards/index.html), we should still support these older versions. 
 
 One way is to use [ActionBarSherlock](http://actionbarsherlock.com/). It is an external library that backports some features in newer Android versions. I don't know how much time and effort it may take to use this external library though.
-
-### Hashing Passwords
-
-Must be done if we are to save passwords locally.
-
-### Dealing with Disconnects
-When application detects that the session has been lost, reprompt for login.
-* There might be a way to know when a session is about to be timed out, application can request a new token when that happens!

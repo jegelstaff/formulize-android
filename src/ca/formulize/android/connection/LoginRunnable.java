@@ -26,16 +26,17 @@ import ca.formulize.android.data.ConnectionInfo;
  * @author timch326
  * 
  */
-public class UserLoginAsyncTask implements Runnable {
+public class LoginRunnable implements Runnable {
 	
 	public final static String EXTRA_LOGIN_RESPONSE_MSG = "ca.formulize.android.connection.ConnectionActivity.extraLoginResponseMsg";
-	public final static String LOGIN_UNSUCESSFUL_MSG = "ca.formulize.android.connection.ConnectionActivity.loginUnsuccessfulMsg";
-	public final static String LOGIN_SUCESSFUL_MSG = "ca.formulize.android.connection.ConnectionActivity.loginSuccessfulMsg";
+	public final static int LOGIN_SUCESSFUL_MSG = 0;
+	public final static int LOGIN_UNSUCESSFUL_MSG = -2;
+	public final static int LOGIN_ERROR_MSG = -1;
 
 	private ConnectionInfo connectionInfo;
 	private Handler handler;
 
-	public UserLoginAsyncTask(ConnectionInfo connectionInfo, Handler handler) {
+	public LoginRunnable(ConnectionInfo connectionInfo, Handler handler) {
 		super();
 
 		this.connectionInfo = connectionInfo;
@@ -45,7 +46,7 @@ public class UserLoginAsyncTask implements Runnable {
 	@Override
 	public void run() {
 		HttpURLConnection urlConnection = null;
-		String response = null;
+		int response = -1;
 		int responseCode = 0;
 
 		try {
@@ -79,7 +80,6 @@ public class UserLoginAsyncTask implements Runnable {
 			// Check Http Status Code
 			urlConnection.connect();
 			responseCode = urlConnection.getResponseCode();
-			Log.d("Formulize", "Http Status Code: " + responseCode);
 
 			// Check For Cookies
 			List<String> cookies = urlConnection.getHeaderFields().get(
@@ -95,6 +95,7 @@ public class UserLoginAsyncTask implements Runnable {
 
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
+			returnResponse(LOGIN_ERROR_MSG);
 		} catch (IOException e) {
 
 			// Print Error Response if response code is not 200
@@ -104,18 +105,17 @@ public class UserLoginAsyncTask implements Runnable {
 				readInputToString(in);
 
 			}
-
 			e.printStackTrace();
-			returnResponse(null);
+			returnResponse(LOGIN_ERROR_MSG);
 		}
 
 		returnResponse(response);
 	}
 
-	private void returnResponse(String result) {
+	private void returnResponse(int result) {
 		Message msgObj = handler.obtainMessage();
 		Bundle b = new Bundle();
-		b.putString(EXTRA_LOGIN_RESPONSE_MSG, result);
+		b.putInt(EXTRA_LOGIN_RESPONSE_MSG, result);
 		msgObj.setData(b);
 		handler.sendMessage(msgObj);
 	}

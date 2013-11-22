@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
+import ca.formulize.android.connection.LogoutAsyncTask;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 
@@ -57,8 +59,27 @@ public class ApplicationListActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.application_list, menu);
+		getMenuInflater().inflate(R.menu.application_menu, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case android.R.id.home:
+			// This ID represents the Home or Up button. In the case of this
+			// activity, the Up button is shown. Use NavUtils to allow users
+			// to navigate up one level in the application structure. For
+			// more details, see the Navigation pattern on Android Design:
+			//
+			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
+			//
+			return true;
+		case R.id.logout:
+			new LogoutAsyncTask(this).execute(connectionInfo);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 	
 	private class ApplicationListClickListener implements OnItemClickListener {
@@ -146,6 +167,7 @@ public class ApplicationListActivity extends FragmentActivity {
 		protected void onPostExecute(String result) {
 			if (progressDialog.isShowing()) {
 				progressDialog.dismiss();
+				progressDialog = null;
 			}
 			super.onPostExecute(result);
 

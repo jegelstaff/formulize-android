@@ -1,11 +1,11 @@
 package ca.formulize.android.menu;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,11 +14,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.formulize.android.R;
+import ca.formulize.android.connection.FUserSession;
+import ca.formulize.android.connection.LogoutAsyncTask;
+import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.data.FormulizeLink;
 import ca.formulize.android.screen.ScreenWebActivity;
 
-public class ScreenListActivity extends Activity {
+public class ScreenListActivity extends FragmentActivity {
 
 	public static final String CURRENT_APPLICATION = "ca.formulize.android.menu.ScreenListActivity.currentApplication";
 	public static final String SCREEN = "Screen";
@@ -80,7 +83,7 @@ public class ScreenListActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.form_list, menu);
+		getMenuInflater().inflate(R.menu.application_menu, menu);
 		return true;
 	}
 
@@ -90,6 +93,10 @@ public class ScreenListActivity extends Activity {
 		case android.R.id.home:
 			// NavUtils.navigateUpFromSameTask(this);
 			onBackPressed();
+			return true;
+		case R.id.logout:
+			ConnectionInfo connectionInfo = FUserSession.getInstance().getConnectionInfo();
+			new LogoutAsyncTask(this).execute(connectionInfo);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

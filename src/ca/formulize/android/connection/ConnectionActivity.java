@@ -152,13 +152,15 @@ public class ConnectionActivity extends FragmentActivity {
 			// If no user name is in the connection info, prompt for login
 			if (selectedConnection.getUsername() == null
 					|| selectedConnection.getUsername().equals("")) {
-				UserLoginDialogFragment loginDialog = new UserLoginDialogFragment();
+				LoginDialogFragment loginDialog = new LoginDialogFragment();
 				Bundle args = new Bundle();
 				args.putParcelable(
-						UserLoginDialogFragment.EXTRA_CONNECITON_INFO,
+						LoginDialogFragment.EXTRA_CONNECITON_INFO,
 						selectedConnection);
 				loginDialog.setArguments(args);
-				loginDialog.show(ConnectionActivity.this.getSupportFragmentManager(), "login");
+				loginDialog.show(
+						ConnectionActivity.this.getSupportFragmentManager(),
+						"login");
 			} else {
 				// FUserSession session = FUserSession.getInstance();
 
@@ -169,7 +171,7 @@ public class ConnectionActivity extends FragmentActivity {
 				progressDialog.setMessage("Logging in");
 				progressDialog.show();
 
-				Runnable loginTask = new UserLoginAsyncTask(selectedConnection,
+				Runnable loginTask = new LoginRunnable(selectedConnection,
 						new LoginHandler(ConnectionActivity.this,
 								selectedConnection, progressDialog));
 				Thread loginThread = new Thread(loginTask);
@@ -217,33 +219,32 @@ public class ConnectionActivity extends FragmentActivity {
 				progressDialog.dismiss();
 			}
 
-			String result = msg.getData().getString(
-					UserLoginAsyncTask.EXTRA_LOGIN_RESPONSE_MSG);
+			int result = msg.getData().getInt(
+					LoginRunnable.EXTRA_LOGIN_RESPONSE_MSG);
 
-			// Bad server Connection
-			if (result == null)
-				Log.d("Formulize", "Connection Failed");
-
-			// Ask for credentials again if they were incorrect
-			else if (result == UserLoginAsyncTask.LOGIN_UNSUCESSFUL_MSG) {
-				UserLoginDialogFragment loginDialog = new UserLoginDialogFragment();
-				Bundle args = new Bundle();
-				args.putParcelable(
-						UserLoginDialogFragment.EXTRA_CONNECITON_INFO,
-						selectedConnection);
-				args.putBoolean(UserLoginDialogFragment.EXTRA_IS_REATTEMPT,
-						true);
-				loginDialog.setArguments(args);
-				loginDialog.show(activity.getSupportFragmentManager(), "login");
-			} else if (result == UserLoginAsyncTask.LOGIN_SUCESSFUL_MSG) {
-				Log.d("Formulize", result);
-				FUserSession.getInstance()
-						.setConnectionInfo(selectedConnection);
-
+			switch(result) {
+			case LoginRunnable.LOGIN_SUCESSFUL_MSG:
+					FUserSession.getInstance().setConnectionInfo(selectedConnection);
+	
 				// Go to application list once logged in
 				Intent viewApplicationsIntent = new Intent(activity,
 						ApplicationListActivity.class);
 				activity.startActivity(viewApplicationsIntent);
+				break;
+			case LoginRunnable.LOGIN_UNSUCESSFUL_MSG:
+				LoginDialogFragment loginDialog = new LoginDialogFragment();
+				Bundle args = new Bundle();
+				args.putParcelable(
+						LoginDialogFragment.EXTRA_CONNECITON_INFO,
+						selectedConnection);
+				args.putBoolean(LoginDialogFragment.EXTRA_IS_REATTEMPT,
+						true);
+				loginDialog.setArguments(args);
+				loginDialog.show(activity.getSupportFragmentManager(), "login");
+				break;
+			default:
+				Log.d("Formulize", "Connection Failed");
+			
 			}
 		}
 	};

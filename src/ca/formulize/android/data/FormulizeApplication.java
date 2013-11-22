@@ -1,7 +1,5 @@
 package ca.formulize.android.data;
 
-import java.util.ArrayList;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

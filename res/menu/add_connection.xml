@@ -5,6 +5,14 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
-    <item android:id="@+id/saveConnection" android:titleCondensed="Save" android:icon="@android:drawable/ic_menu_save" android:title="Save" android:visible="true" android:enabled="true" android:showAsAction="always|withText"></item>
+    <item
+        android:id="@+id/saveConnection"
+        android:enabled="true"
+        android:icon="@android:drawable/ic_menu_save"
+        android:showAsAction="always|withText"
+        android:title="Save"
+        android:titleCondensed="Save"
+        android:visible="true">
+    </item>
 
 </menu>

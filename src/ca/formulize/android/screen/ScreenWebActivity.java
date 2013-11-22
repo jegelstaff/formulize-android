@@ -6,16 +6,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import ca.formulize.android.R;
-
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,9 +20,12 @@ import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
+import ca.formulize.android.connection.LogoutAsyncTask;
+import ca.formulize.android.data.ConnectionInfo;
 
-public class ScreenWebActivity extends Activity {
+public class ScreenWebActivity extends FragmentActivity {
 	public static final String SID = "ca.formulize.android.screen.screenID";
 	private WebView webView;
 
@@ -94,7 +94,7 @@ public class ScreenWebActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.screen_web, menu);
+		getMenuInflater().inflate(R.menu.application_menu, menu);
 		return true;
 	}
 
@@ -104,6 +104,10 @@ public class ScreenWebActivity extends Activity {
 		case android.R.id.home:
 			//NavUtils.navigateUpFromSameTask(this);
 			onBackPressed();
+			return true;
+		case R.id.logout:
+			ConnectionInfo connectionInfo = FUserSession.getInstance().getConnectionInfo();
+			new LogoutAsyncTask(this).execute(connectionInfo);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -22,7 +22,7 @@ import ca.formulize.android.data.ConnectionInfo;
  * @author timch326
  * 
  */
-public class UserLoginDialogFragment extends DialogFragment {
+public class LoginDialogFragment extends DialogFragment {
 
 	public static final String EXTRA_CONNECITON_INFO = "ca.formulize.android.extras.connectionInfo";
 	public static final String EXTRA_IS_REATTEMPT = "ca.formulize.android.extras.isReattempt";
@@ -72,7 +72,7 @@ public class UserLoginDialogFragment extends DialogFragment {
 							@Override
 							public void onClick(DialogInterface dialog,
 									int which) {
-								UserLoginDialogFragment.this.getDialog()
+								LoginDialogFragment.this.getDialog()
 										.cancel();
 
 							}
@@ -97,13 +97,11 @@ public class UserLoginDialogFragment extends DialogFragment {
 						connectionInfo.setPassword(password);
 
 						if (isValidInput()) {
-							FUserSession session = FUserSession.getInstance();
-							//session.createConnection(getActivity(),connectionInfo);
-							ProgressDialog progressDialog = new ProgressDialog(UserLoginDialogFragment.this.getActivity());
+							ProgressDialog progressDialog = new ProgressDialog(LoginDialogFragment.this.getActivity());
 							progressDialog.setMessage("Logging in");
 							progressDialog.show();
-							Handler handler = new ConnectionActivity.LoginHandler(UserLoginDialogFragment.this.getActivity(), connectionInfo, progressDialog);
-							Runnable loginRunnable = new UserLoginAsyncTask(connectionInfo, handler);
+							Handler handler = new ConnectionActivity.LoginHandler(LoginDialogFragment.this.getActivity(), connectionInfo, progressDialog);
+							Runnable loginRunnable = new LoginRunnable(connectionInfo, handler);
 							new Thread(loginRunnable).start();
 						}
 					}
