@@ -9,7 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,17 +45,17 @@ public class ApplicationListActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);	
+		super.onCreate(savedInstanceState);
 		applicationListView = new ListView(this);
 		setContentView(applicationListView);
-		
+
 		applicationListView
-		.setOnItemClickListener(new ApplicationListClickListener());
+				.setOnItemClickListener(new ApplicationListClickListener());
 
 		// Get available applications from current user
 		connectionInfo = FUserSession.getInstance().getConnectionInfo();
 		new MenuListRequestTask(this).execute(connectionInfo);
-		
+
 	}
 
 	@Override
@@ -62,7 +64,7 @@ public class ApplicationListActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.application_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -81,7 +83,32 @@ public class ApplicationListActivity extends FragmentActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
+	/**
+	 * Checks if there are any applications available to the user. If there
+	 * aren't any, the user would be notified through a DialogFragment and be
+	 * returned to the connection activity.
+	 */
+	private void checkAvailableApplications() {
+		if (applications.length <= 0) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("No Availible Applications")
+				.setMessage("You do not have access to any applications, please contact your web master for support.")
+				.setCancelable(false)
+				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// Log the user out as this dialog closes
+						new LogoutAsyncTask(ApplicationListActivity.this).execute(connectionInfo);						
+					}
+				});
+			builder.show();
+		} else {
+			Log.d("Formulize", "Found " + applications.length + " applications");
+		}
+	}
+
 	private class ApplicationListClickListener implements OnItemClickListener {
 
 		public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -92,12 +119,13 @@ public class ApplicationListActivity extends FragmentActivity {
 					.getAdapter().getItem(position);
 			Intent screenListIntent = new Intent(ApplicationListActivity.this,
 					ScreenListActivity.class);
-			screenListIntent.putExtra(ScreenListActivity.CURRENT_APPLICATION, selectedApplication);
+			screenListIntent.putExtra(ScreenListActivity.CURRENT_APPLICATION,
+					selectedApplication);
 			startActivity(screenListIntent);
 
 		}
 	}
-	
+
 	/**
 	 * This AsyncTask retrieves the list of menu entries available to the user.
 	 * NOTE: If the user is not logged in, menu links available to anonymous
@@ -174,19 +202,22 @@ public class ApplicationListActivity extends FragmentActivity {
 			// No applications found
 			if (result == null) {
 				Log.d("Formulize", "No Applciations!");
-		
+
 			}
 			// Add all applications fetched from the server
 			else {
 				Gson gson = new GsonBuilder().setFieldNamingPolicy(
 						FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-				applications = gson.fromJson(result, FormulizeApplication[].class);
-				
-				applicationListAdapter = new ArrayAdapter<FormulizeApplication>(activity,
-						android.R.layout.simple_list_item_1, applications);
+				applications = gson.fromJson(result,
+						FormulizeApplication[].class);
+
+				applicationListAdapter = new ArrayAdapter<FormulizeApplication>(
+						activity, android.R.layout.simple_list_item_1,
+						applications);
 
 				// Set ListView adapter and click listener
 				applicationListView.setAdapter(applicationListAdapter);
+				checkAvailableApplications();
 			}
 		}
 

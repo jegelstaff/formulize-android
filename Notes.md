@@ -1,11 +1,7 @@
 ## Current Tasks
 
-### Check for servers that don't have any applications available to the user
-* If this happens, politely escort them back to the connection menu, and ask them to contact the webmaster.
-
-### Add a logout button within the menu, screen
-
 ### When the user re-opens the application, log back in to their last application
+* Override the 
 
 ### Check if there is internet connection before logging in!
 
@@ -30,6 +26,14 @@
 	* Name
 	* Options
 	* Usernames, Passwords
+
+### Check for servers that don't have any applications available to the user
+* If this happens, politely escort them back to the connection menu, and ask them to contact the webmaster.
+* Log out the user
+
+### Add a logout button within the menu, screen
+* Create a new Runnable that sends `op=logout` to `user.php`.
+* Start it on a separate thread and then go back to the ConnectionActivity screen. 
 
 ### Better Information on connection info
 * Try showing the username, and URL of the connection in addition to the name

@@ -64,7 +64,7 @@ public class FormulizeApplication implements Parcelable {
 		dest.writeParcelableArray(links, 0);
 	}
 
-	// static field used to regenerate formulize link data from a parcel
+	// static field used to regenerate Formulize link data from a parcel
 	public static final Parcelable.Creator<FormulizeApplication> CREATOR = new Parcelable.Creator<FormulizeApplication>() {
 		public FormulizeApplication createFromParcel(Parcel pc) {
 			return new FormulizeApplication(pc);
