@@ -90,7 +90,7 @@ public class LoginDialogFragment extends DialogFragment {
 				positiveButton.setOnClickListener(new View.OnClickListener() {
 
 					@Override
-					public void onClick(View arg0) {
+					public void onClick(View view) {
 						username = usernameView.getText().toString();
 						password = passwordView.getText().toString();
 						connectionInfo.setUsername(username);
@@ -98,11 +98,12 @@ public class LoginDialogFragment extends DialogFragment {
 
 						if (isValidInput()) {
 							ProgressDialog progressDialog = new ProgressDialog(LoginDialogFragment.this.getActivity());
-							progressDialog.setMessage("Logging in");
+							progressDialog.setMessage(getString(R.string.progress_login));
 							progressDialog.show();
 							Handler handler = new ConnectionActivity.LoginHandler(LoginDialogFragment.this.getActivity(), connectionInfo, progressDialog);
 							Runnable loginRunnable = new LoginRunnable(connectionInfo, handler);
 							new Thread(loginRunnable).start();
+							LoginDialogFragment.this.dismiss();
 						}
 					}
 				});
@@ -120,11 +121,11 @@ public class LoginDialogFragment extends DialogFragment {
 	private boolean isValidInput() {
 		Boolean isValid = true;
 		if ("".equals(username)) {
-			usernameView.setError("Enter an username");
+			usernameView.setError(getString(R.string.error_username));
 			isValid = false;
 		}
 		if ("".equals(password)) {
-			passwordView.setError("Enter a password");
+			passwordView.setError(getString(R.string.error_password));
 			isValid = false;
 		}
 		return isValid;

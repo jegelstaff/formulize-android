@@ -72,6 +72,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.formulize.android.connection.ConnectionActivity" />
         </activity>
+        <activity
+            android:name="ca.formulize.android.StarterActivity"
+            android:label="@string/title_activity_starter" >
+        </activity>
     </application>
 
 </manifest>

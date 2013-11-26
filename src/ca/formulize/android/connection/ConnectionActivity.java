@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -168,7 +169,7 @@ public class ConnectionActivity extends FragmentActivity {
 				// session.createConnection(ConnectionActivity.this,
 				// selectedConnection);
 				progressDialog = new ProgressDialog(ConnectionActivity.this);
-				progressDialog.setMessage("Logging in");
+				progressDialog.setMessage(getString(R.string.progress_login));
 				progressDialog.show();
 
 				Runnable loginTask = new LoginRunnable(selectedConnection,
@@ -243,8 +244,10 @@ public class ConnectionActivity extends FragmentActivity {
 				loginDialog.show(activity.getSupportFragmentManager(), "login");
 				break;
 			default:
-				Log.d("Formulize", "Connection Failed");
-			
+				Toast connectionToast = Toast.makeText(activity,
+						R.string.toast_connection_failed,
+						Toast.LENGTH_SHORT);
+				connectionToast.show();			
 			}
 		}
 	};

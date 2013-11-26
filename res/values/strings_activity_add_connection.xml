@@ -16,5 +16,15 @@
     <string name="password_hint">Password</string>
         
     <string name="save_login_credentials_text">Save username and password</string>
+    <string name="progress_validation">Validating Connection</string>
+    
+    
+    <!-- Error Messages -->
+    <string name="error_connection_name">Enter a connection name</string>
+    <string name="error_username">Enter an username</string>
+    <string name="error_password">Enter a password</string>
+    <string name="error_url">Enter a valid URL</string>
+    <string name="error_formulize_url">This is not a Formulize URL</string>
+
     
 </resources>

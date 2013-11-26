@@ -21,10 +21,20 @@ import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.data.FormulizeLink;
 import ca.formulize.android.screen.ScreenWebActivity;
 
+/**
+ * Displays the available screens of a chosen application. The activity expects
+ * to given an array of FormulizeLink in the intent is receives, it would
+ * display this array of links in a ListView. When the user selects an item on
+ * the list, ScreenWebActivity would be opened, with the sid of the
+ * corresponding item within the intent.
+ * 
+ * @author timch326
+ * 
+ */
 public class ScreenListActivity extends FragmentActivity {
 
-	public static final String CURRENT_APPLICATION = "ca.formulize.android.menu.ScreenListActivity.currentApplication";
-	public static final String SCREEN = "Screen";
+	public static final String EXTRA_SCREENS_AVAILABLE = "ca.formulize.android.extras.currentApplication";
+	public static final String EXTRA_APP_ID = "ca.formulize.android.extras.applicationID";
 
 	private FormulizeApplication currentApplication;
 	private ArrayAdapter<FormulizeLink> linksAdapter;
@@ -39,7 +49,7 @@ public class ScreenListActivity extends FragmentActivity {
 		// Get selected application
 		Intent screenListIntent = getIntent();
 		currentApplication = screenListIntent
-				.getParcelableExtra(CURRENT_APPLICATION);
+				.getParcelableExtra(EXTRA_SCREENS_AVAILABLE);
 		setTitle(currentApplication.getName());
 
 		// Initialize list of available screens for the application
@@ -58,7 +68,7 @@ public class ScreenListActivity extends FragmentActivity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 
-		savedInstanceState.putParcelable(CURRENT_APPLICATION,
+		savedInstanceState.putParcelable(EXTRA_SCREENS_AVAILABLE,
 				currentApplication);
 	}
 
@@ -67,7 +77,7 @@ public class ScreenListActivity extends FragmentActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 
 		currentApplication = savedInstanceState
-				.getParcelable(CURRENT_APPLICATION);
+				.getParcelable(EXTRA_SCREENS_AVAILABLE);
 	}
 
 	/**
@@ -95,7 +105,8 @@ public class ScreenListActivity extends FragmentActivity {
 			onBackPressed();
 			return true;
 		case R.id.logout:
-			ConnectionInfo connectionInfo = FUserSession.getInstance().getConnectionInfo();
+			ConnectionInfo connectionInfo = FUserSession.getInstance()
+					.getConnectionInfo();
 			new LogoutAsyncTask(this).execute(connectionInfo);
 			return true;
 		}
@@ -125,7 +136,7 @@ public class ScreenListActivity extends FragmentActivity {
 						Uri.parse(url));
 				startActivity(browserIntent);
 			} else {
-				screenList.putExtra(ScreenWebActivity.SID,
+				screenList.putExtra(ScreenWebActivity.EXTRA_SID,
 						selectedLink.getScreen());
 				startActivity(screenList);
 			}

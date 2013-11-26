@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 
 /**
- * This class represents a Formulize Application and its links it contains to
- * different screens/forms
+ * Represents a Formulize Application and its links it contains to
+ * different screens/forms. 
  * 
  * @author timch326
  * 

@@ -1,7 +1,12 @@
 ## Current Tasks
 
-### When the user re-opens the application, log back in to their last application
-* Override the 
+### When the user re-opens Formulize, log back in to their last application
+* On every activity, when the application is `onPause()`, save the current activity to the preferences, along with the current connection being used.
+* ScreenListActivity needs to be refactored so it doesn't take in a `FormulizeApplicaiton` object. Instead it should be just taking the ConnectionInfo, and application ID
+* `applist.php` needs to take additional parameters to just return the screen of a specific application.
+* A launcher activity should be added to read from the current preferences, so it returns the proper activity and connection that the user last opened.
+
+### Use Action Sherlock to add Action Bar support to older devices
 
 ### Check if there is internet connection before logging in!
 

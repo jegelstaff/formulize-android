@@ -34,9 +34,17 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+/**
+ * Displays the available applications that a user can access from with their
+ * Formulize account. It accesses app_list.php on the Formulize server to
+ * retrieve the list of available applications and screens.
+ * 
+ * @author timch326
+ * 
+ */
 public class ApplicationListActivity extends FragmentActivity {
 
-	public static final String APPLICATIONS = "ca.formulize.android.menu.ApplicationListActivity.applications";
+	public static final String APPLICATIONS = "ca.formulize.android.extras.applications";
 
 	public FormulizeApplication[] applications;
 	private ArrayAdapter<FormulizeApplication> applicationListAdapter;
@@ -92,17 +100,22 @@ public class ApplicationListActivity extends FragmentActivity {
 	private void checkAvailableApplications() {
 		if (applications.length <= 0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle("No Availible Applications")
-				.setMessage("You do not have access to any applications, please contact your web master for support.")
-				.setCancelable(false)
-				.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// Log the user out as this dialog closes
-						new LogoutAsyncTask(ApplicationListActivity.this).execute(connectionInfo);						
-					}
-				});
+			builder.setTitle(R.string.dialog_title_no_apps)
+					.setMessage(
+							R.string.dialog_message_no_apps)
+					.setCancelable(false)
+					.setPositiveButton(android.R.string.ok,
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// Log the user out as this dialog closes
+									new LogoutAsyncTask(
+											ApplicationListActivity.this)
+											.execute(connectionInfo);
+								}
+							});
 			builder.show();
 		} else {
 			Log.d("Formulize", "Found " + applications.length + " applications");
@@ -119,7 +132,10 @@ public class ApplicationListActivity extends FragmentActivity {
 					.getAdapter().getItem(position);
 			Intent screenListIntent = new Intent(ApplicationListActivity.this,
 					ScreenListActivity.class);
-			screenListIntent.putExtra(ScreenListActivity.CURRENT_APPLICATION,
+			screenListIntent
+					.putExtra(ScreenListActivity.EXTRA_APP_ID, position);
+			screenListIntent.putExtra(
+					ScreenListActivity.EXTRA_SCREENS_AVAILABLE,
 					selectedApplication);
 			startActivity(screenListIntent);
 
@@ -148,7 +164,7 @@ public class ApplicationListActivity extends FragmentActivity {
 		}
 
 		protected void onPreExecute() {
-			this.progressDialog.setMessage("Getting Available Forms");
+			this.progressDialog.setMessage(activity.getString(R.string.progress_get_apps));
 			progressDialog.show();
 		}
 

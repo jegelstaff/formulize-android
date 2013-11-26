@@ -1,7 +1,9 @@
 package ca.formulize.android.connection;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.CookieHandler;
@@ -11,27 +13,33 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import ca.formulize.android.data.ConnectionInfo;
 
 /**
  * An asynchronous routine that logs into a Formulize server given the
  * connection info and a callback function.
  * 
+ * isUserLoggedIn.php is used to validate whether a connection is a valid Formulize connection. 
+ * If the server does not respond to this link with a "1" or "0" then it is considered invalid.
+ * Once it is considered valid, it would attempt to create a user session through user.php, 
+ * if a user session is established, isUserLoggedIn.php returns a "1" when accessed.
+ * 
  * @author timch326
  * 
  */
 public class LoginRunnable implements Runnable {
+
+	// The Bundle key that this runnable uses to send messages to handlers
+	public final static String EXTRA_LOGIN_RESPONSE_MSG = "ca.formulize.android.extras.LoginResponseMsg";
 	
-	public final static String EXTRA_LOGIN_RESPONSE_MSG = "ca.formulize.android.connection.ConnectionActivity.extraLoginResponseMsg";
-	public final static int LOGIN_SUCESSFUL_MSG = 0;
-	public final static int LOGIN_UNSUCESSFUL_MSG = -2;
-	public final static int LOGIN_ERROR_MSG = -1;
+	// Messages sent by this runnable
+	public final static int LOGIN_SUCESSFUL_MSG = 0;	// User logged into their connection successfully
+	public final static int LOGIN_UNSUCESSFUL_MSG = -2; // Unable to login, login credentials are probably incorrect
+	public final static int LOGIN_ERROR_MSG = -1;		// Bad network connection, or invalid Formulize connection
 
 	private ConnectionInfo connectionInfo;
 	private Handler handler;
@@ -55,42 +63,56 @@ public class LoginRunnable implements Runnable {
 			CookieHandler.setDefault(new CookieManager(null,
 					CookiePolicy.ACCEPT_ALL));
 
+			// Check if the connection is a valid Formulize connection
+			urlConnection = (HttpURLConnection) new URL(
+					connectionInfo.getConnectionURL() + "isUserLoggedIn.php")
+					.openConnection();
+
+			InputStream in = new BufferedInputStream(
+					urlConnection.getInputStream());
+			String isUserLoggedIn = readInputToString(new InputStreamReader(in)).trim();
+			if (!isUserLoggedIn.equals("1") || !isUserLoggedIn.equals("0") ) {
+				throw new MalformedURLException();
+			}
+
 			// Create connection to server and set request parameters
 			urlConnection = (HttpURLConnection) new URL(
 					connectionInfo.getConnectionURL() + "user.php")
 					.openConnection();
-			urlConnection.setReadTimeout(10000);
-			urlConnection.setConnectTimeout(15000);
 			urlConnection.setDoOutput(true); // Triggers POST
 			urlConnection.setInstanceFollowRedirects(false);
 
-			// Enter Post Parameters
 			String query = String.format("op=%s&pass=%s&uname=%s",
 					URLEncoder.encode("login", "UTF-8"),
 					URLEncoder.encode(connectionInfo.getPassword(), "UTF-8"),
 					URLEncoder.encode(connectionInfo.getUsername(), "UTF-8"));
 
-			Log.d("Formulize", query);
-
 			OutputStream output = urlConnection.getOutputStream();
 			output.write(query.getBytes("UTF-8"));
 
-			Log.d("Formulize", connectionInfo.getConnectionURL());
-
-			// Check Http Status Code
-			urlConnection.connect();
 			responseCode = urlConnection.getResponseCode();
+			if (responseCode != 200 && responseCode != 302) {
+				throw new MalformedURLException();
+			}
 
-			// Check For Cookies
-			List<String> cookies = urlConnection.getHeaderFields().get(
-					"Set-Cookie");
-			Log.d("Formulize", cookies.toString());
+			/*
+			 * Check if the user is successfully logged in. isUserLoggedIn.php
+			 * indicates the user has a session with the session by return a "1"
+			 * otherwise it should return a "0".
+			 */
+			urlConnection = (HttpURLConnection) new URL(
+					connectionInfo.getConnectionURL() + "isUserLoggedIn.php")
+					.openConnection();
 
-			// If there are 2 or more cookies received, login was successful
-			if (cookies.size() >= 2) {
+			in = new BufferedInputStream(
+					urlConnection.getInputStream());
+			isUserLoggedIn = readInputToString(new InputStreamReader(in)).trim();
+			if (isUserLoggedIn.equals("1")) {
 				response = LOGIN_SUCESSFUL_MSG;
-			} else {
+			} else if (isUserLoggedIn.equals("0")) {
 				response = LOGIN_UNSUCESSFUL_MSG;
+			} else {
+				response = LOGIN_ERROR_MSG;
 			}
 
 		} catch (MalformedURLException e) {
@@ -108,7 +130,6 @@ public class LoginRunnable implements Runnable {
 			e.printStackTrace();
 			returnResponse(LOGIN_ERROR_MSG);
 		}
-
 		returnResponse(response);
 	}
 

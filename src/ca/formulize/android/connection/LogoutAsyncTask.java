@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
 
 /**
@@ -43,7 +44,7 @@ public class LogoutAsyncTask extends
 	}
 
 	protected void onPreExecute() {
-		this.progressDialog.setMessage("Logging out");
+		this.progressDialog.setMessage(activity.getString(R.string.progress_logout));
 		progressDialog.show();
 	}
 

@@ -1,9 +1,12 @@
 package ca.formulize.android.connection;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
@@ -39,7 +42,7 @@ import ca.formulize.android.data.FormulizeDBHelper;
 public class AddConnectionActivity extends FragmentActivity {
 
 	// Extra parameter to allow connections to be edited
-	public static final String EXTRA_CONNECTION_ID = "ca.formulize.android.extra.connectionID";
+	public static final String EXTRA_CONNECTION_ID = "ca.formulize.android.extras.connectionID";
 
 	// Values for connection information
 	private String connectionURL;
@@ -55,6 +58,7 @@ public class AddConnectionActivity extends FragmentActivity {
 	private TextView loginDetails;
 	private EditText usernameView;
 	private EditText passwordView;
+	private ProgressDialog progressDialog;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +87,6 @@ public class AddConnectionActivity extends FragmentActivity {
 			ConnectionInfo connection = dbHelper
 					.getConnection(selectedConnectionID);
 			connectionURLView.setText(connection.getConnectionURL());
-			connectionNameView.setText(connection.getConnectionName());
 
 			if (!connection.getUsername().equals("")) {
 				saveLoginCredentialsView.setChecked(true);
@@ -132,7 +135,7 @@ public class AddConnectionActivity extends FragmentActivity {
 
 			connectionURL = connectionURLView.getText().toString();
 			connectionName = connectionNameView.getText().toString();
-			
+
 			if (saveLoginCredentialsView.isChecked()) {
 				username = usernameView.getText().toString();
 				password = passwordView.getText().toString();
@@ -142,31 +145,14 @@ public class AddConnectionActivity extends FragmentActivity {
 			}
 
 			if (isValidInput()) {
-
 				ConnectionInfo connectionInfo = new ConnectionInfo(
 						connectionURL, connectionName, username, password);
-
-				// Add a new connection or modify an existing one depending on
-				// whether there has been a selected connection id
-				if (selectedConnectionID >= 0) {
-					modifyConnection(connectionInfo, selectedConnectionID);
-					Toast connectionToast = Toast.makeText(this,
-							"Connection Updated", Toast.LENGTH_SHORT);
-					connectionToast.show();
-				} else {
-					addConnection(connectionInfo);
-					Toast connectionToast = Toast.makeText(this,
-							"Connection Added", Toast.LENGTH_SHORT);
-					connectionToast.show();
-				}
-				Intent connectionListIntent = new Intent(
-						AddConnectionActivity.this, ConnectionActivity.class);
-				startActivity(connectionListIntent);
+				validateFormulizeConnection(connectionInfo,
+						selectedConnectionID);
 
 			} else {
 				return false;
 			}
-
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -210,16 +196,17 @@ public class AddConnectionActivity extends FragmentActivity {
 
 		// Check for empty textboxes
 		if ("".equals(connectionName)) {
-			connectionNameView.setError("Enter a connection name");
+			connectionNameView
+					.setError(getString(R.string.error_connection_name));
 			isValid = false;
 		}
 		if (saveLoginCredentialsView.isChecked()) {
 			if ("".equals(username)) {
-				usernameView.setError("Enter an username");
+				usernameView.setError(getString(R.string.error_username));
 				isValid = false;
 			}
 			if ("".equals(password)) {
-				passwordView.setError("Enter a password");
+				passwordView.setError(getString(R.string.error_password));
 				isValid = false;
 			}
 		}
@@ -234,25 +221,131 @@ public class AddConnectionActivity extends FragmentActivity {
 		}
 		// Validate HTTP URL
 		if (!connectionURL.matches(Patterns.WEB_URL.toString())) {
-			connectionURLView.setError("Enter a valid URL");
+			connectionURLView.setError(getString(R.string.error_url));
 			isValid = false;
 		}
 		return isValid;
 	}
 
-	boolean isValidConnection(ConnectionInfo connection) {
-		// TODO: Implement the actual validation
-		return true;
+	/**
+	 * Checks if the connection leads to a valid Formulize server by trying to
+	 * do a login. If the login did not return an error, then the connection is
+	 * considered valid and it would be added/updated to the database.
+	 * 
+	 * @param connection
+	 *            The connection information input by user
+	 * @param connectionID
+	 *            The associated connection ID, -1 if this is a new connection
+	 */
+	void validateFormulizeConnection(ConnectionInfo connection,
+			long connectionID) {
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setMessage(getString(R.string.progress_validation));
+		progressDialog.show();
+
+		Runnable loginTask = new LoginRunnable(connection,
+				new ConnectionValidationHandler(this, connection,
+						progressDialog, connectionID));
+		Thread loginThread = new Thread(loginTask);
+
+		loginThread.start();
 	}
 
-	private void addConnection(ConnectionInfo connection) {
-		FormulizeDBHelper dbHelper = new FormulizeDBHelper(this);
+	/**
+	 * Adds the specified connection to the database.
+	 * 
+	 * @param connection
+	 *            The connection information input by user
+	 * @param activity
+	 *            The activity that the database helper and views would attach
+	 *            onto
+	 */
+	private static void addConnection(ConnectionInfo connection,
+			FragmentActivity activity) {
+		FormulizeDBHelper dbHelper = new FormulizeDBHelper(activity);
 		dbHelper.insertConnectionInfo(connection);
+		Toast connectionToast = Toast.makeText(activity,
+				R.string.toast_connection_added, Toast.LENGTH_SHORT);
+		connectionToast.show();
 	}
 
-	private void modifyConnection(ConnectionInfo connection, long connectionID) {
-		FormulizeDBHelper dbHelper = new FormulizeDBHelper(this);
+	/**
+	 * Updates the specified connection in the database.
+	 * 
+	 * @param connection
+	 *            The connection information input by user
+	 * 
+	 * @param connectionID
+	 *            The associated connection ID that the connection has in the
+	 *            database
+	 * @param activity
+	 *            The activity that the database helper and views would attach
+	 *            onto
+	 */
+	private static void modifyConnection(ConnectionInfo connection,
+			long connectionID, FragmentActivity activity) {
+		FormulizeDBHelper dbHelper = new FormulizeDBHelper(activity);
 		int result = dbHelper.updateConnectionInfo(connection, connectionID);
 		Log.d("Formulize", "Updated connection" + result);
+
+		Toast connectionToast = Toast.makeText(activity,
+				R.string.toast_connection_updated, Toast.LENGTH_SHORT);
+		connectionToast.show();
 	}
+
+	/**
+	 * This Handler responds to messages sent by {@link LoginRunnable} to
+	 * indicate whether the connection information provided by the user is a
+	 * valid Formulize server connection. A connection is considered valid even
+	 * if login credentials are incorrect.
+	 * 
+	 * @author timch326
+	 * 
+	 */
+	private static class ConnectionValidationHandler extends Handler {
+
+		private final ConnectionInfo selectedConnection;
+		private final AddConnectionActivity activity;
+		private final ProgressDialog progressDialog;
+		private final long connectionID;
+
+		public ConnectionValidationHandler(AddConnectionActivity activity,
+				ConnectionInfo selectedConnection,
+				ProgressDialog progressDialog, long connectionID) {
+			super();
+			this.selectedConnection = selectedConnection;
+			this.progressDialog = progressDialog;
+			this.activity = activity;
+			this.connectionID = connectionID;
+		}
+
+		public void handleMessage(Message msg) {
+
+			if (progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
+
+			int result = msg.getData().getInt(
+					LoginRunnable.EXTRA_LOGIN_RESPONSE_MSG);
+
+			switch (result) {
+			case LoginRunnable.LOGIN_SUCESSFUL_MSG:
+			case LoginRunnable.LOGIN_UNSUCESSFUL_MSG:
+				if (connectionID >= 0) {
+					AddConnectionActivity.modifyConnection(selectedConnection,
+							connectionID, activity);
+				} else {
+					AddConnectionActivity.addConnection(selectedConnection,
+							activity);
+				}
+				Intent connectionListIntent = new Intent(activity,
+						ConnectionActivity.class);
+				activity.startActivity(connectionListIntent);
+				break;
+			default:
+				activity.connectionURLView.setError(activity
+						.getString(R.string.error_formulize_url));
+			}
+		}
+	};
 }

@@ -25,8 +25,18 @@ import ca.formulize.android.connection.FUserSession;
 import ca.formulize.android.connection.LogoutAsyncTask;
 import ca.formulize.android.data.ConnectionInfo;
 
+/**
+ * Displays a Formulize screen given its screen ID. It assumes that there exists
+ * proper session cookies given in the Cookie Manager within HttpURLConnection.
+ * It transfers these session cookies to the Android WebView so it could display
+ * the screen.
+ * 
+ * @author timch326
+ * 
+ */
 public class ScreenWebActivity extends FragmentActivity {
-	public static final String SID = "ca.formulize.android.screen.screenID";
+	public static final String EXTRA_SID = "ca.formulize.android.extras.sid";
+	
 	private WebView webView;
 
 	@Override
@@ -41,7 +51,7 @@ public class ScreenWebActivity extends FragmentActivity {
 
 		// Parameters to access a screen
 		Intent screenIntent = getIntent();
-		String sid = screenIntent.getStringExtra(SID);
+		String sid = screenIntent.getStringExtra(EXTRA_SID);
 		FUserSession userSession = FUserSession.getInstance();
 		String urlString = userSession.getConnectionInfo().getConnectionURL();
 
@@ -54,10 +64,13 @@ public class ScreenWebActivity extends FragmentActivity {
 		}
 
 		// Pass session cookies from HttpUrlConnection to the WebView
-		android.webkit.CookieSyncManager.createInstance(this);			// WebView Cookie Manager
-		android.webkit.CookieManager cookieManager = CookieManager.getInstance();
+		android.webkit.CookieSyncManager.createInstance(this); // WebView Cookie
+																// Manager
+		android.webkit.CookieManager cookieManager = CookieManager
+				.getInstance();
 		java.net.CookieStore rawCookieStore = ((java.net.CookieManager) CookieHandler
-				.getDefault()).getCookieStore();						// HttpUrlConnection Cookie Manager
+				.getDefault()).getCookieStore(); // HttpUrlConnection Cookie
+													// Manager
 
 		// Copy cookies from HttpURLConnection to WebView
 		List<HttpCookie> cookies = rawCookieStore.get(baseURI);
@@ -75,9 +88,9 @@ public class ScreenWebActivity extends FragmentActivity {
 		webView.getSettings().setJavaScriptEnabled(true);
 		String fFormURL = userSession.getConnectionInfo().getConnectionURL()
 				+ "modules/formulize/index.php?" + sid;
-		
+
 		Log.d("Formulize", "screenURL: " + fFormURL);
-		
+
 		webView.loadUrl(fFormURL);
 	}
 
@@ -102,11 +115,12 @@ public class ScreenWebActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			//NavUtils.navigateUpFromSameTask(this);
+			// NavUtils.navigateUpFromSameTask(this);
 			onBackPressed();
 			return true;
 		case R.id.logout:
-			ConnectionInfo connectionInfo = FUserSession.getInstance().getConnectionInfo();
+			ConnectionInfo connectionInfo = FUserSession.getInstance()
+					.getConnectionInfo();
 			new LogoutAsyncTask(this).execute(connectionInfo);
 			return true;
 		}
