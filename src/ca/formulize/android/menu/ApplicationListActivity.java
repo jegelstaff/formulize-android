@@ -44,7 +44,7 @@ import com.google.gson.GsonBuilder;
  */
 public class ApplicationListActivity extends FragmentActivity {
 
-	public static final String APPLICATIONS = "ca.formulize.android.extras.applications";
+	public static final String EXTRA_APPLICATIONS = "ca.formulize.android.extras.applications";
 
 	public FormulizeApplication[] applications;
 	private ArrayAdapter<FormulizeApplication> applicationListAdapter;
@@ -55,15 +55,61 @@ public class ApplicationListActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		applicationListView = new ListView(this);
-		setContentView(applicationListView);
-
 		applicationListView
 				.setOnItemClickListener(new ApplicationListClickListener());
+		
+		setContentView(applicationListView);
+		connectionInfo = FUserSession.getInstance().getConnectionInfo();
 
 		// Get available applications from current user
-		connectionInfo = FUserSession.getInstance().getConnectionInfo();
-		new MenuListRequestTask(this).execute(connectionInfo);
+		if (savedInstanceState != null) {
+			applications = (FormulizeApplication[]) savedInstanceState
+					.getParcelableArray(EXTRA_APPLICATIONS);
+			loadApplicationList(applications);
 
+		} else {
+			new MenuListRequestTask(this).execute(connectionInfo);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void loadApplicationList(FormulizeApplication[] applications) {
+		applicationListAdapter = new ArrayAdapter<FormulizeApplication>(this,
+				android.R.layout.simple_list_item_1, applications);
+
+		// Set ListView adapter and click listener
+		applicationListView.setAdapter(applicationListAdapter);
+
+		// If no applications were loaded, inform the user and logout
+		if (applications.length <= 0) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.dialog_title_no_apps)
+					.setMessage(R.string.dialog_message_no_apps)
+					.setCancelable(false)
+					.setPositiveButton(android.R.string.ok,
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									// Log the user out as this dialog closes
+									new LogoutAsyncTask(
+											ApplicationListActivity.this)
+											.execute(connectionInfo);
+								}
+							});
+			builder.show();
+		} else {
+			Log.d("Formulize", "Found " + applications.length + " applications");
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putParcelableArray(EXTRA_APPLICATIONS, applications);
 	}
 
 	@Override
@@ -101,8 +147,7 @@ public class ApplicationListActivity extends FragmentActivity {
 		if (applications.length <= 0) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.dialog_title_no_apps)
-					.setMessage(
-							R.string.dialog_message_no_apps)
+					.setMessage(R.string.dialog_message_no_apps)
 					.setCancelable(false)
 					.setPositiveButton(android.R.string.ok,
 							new DialogInterface.OnClickListener() {
@@ -164,7 +209,8 @@ public class ApplicationListActivity extends FragmentActivity {
 		}
 
 		protected void onPreExecute() {
-			this.progressDialog.setMessage(activity.getString(R.string.progress_get_apps));
+			this.progressDialog.setMessage(activity
+					.getString(R.string.progress_get_apps));
 			progressDialog.show();
 		}
 
@@ -227,13 +273,7 @@ public class ApplicationListActivity extends FragmentActivity {
 				applications = gson.fromJson(result,
 						FormulizeApplication[].class);
 
-				applicationListAdapter = new ArrayAdapter<FormulizeApplication>(
-						activity, android.R.layout.simple_list_item_1,
-						applications);
-
-				// Set ListView adapter and click listener
-				applicationListView.setAdapter(applicationListAdapter);
-				checkAvailableApplications();
+				loadApplicationList(applications);
 			}
 		}
 

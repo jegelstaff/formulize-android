@@ -36,7 +36,7 @@ import ca.formulize.android.data.ConnectionInfo;
  */
 public class ScreenWebActivity extends FragmentActivity {
 	public static final String EXTRA_SID = "ca.formulize.android.extras.sid";
-	
+
 	private WebView webView;
 
 	@Override
@@ -49,49 +49,58 @@ public class ScreenWebActivity extends FragmentActivity {
 		webView = new WebView(this);
 		setContentView(webView);
 
-		// Parameters to access a screen
-		Intent screenIntent = getIntent();
-		String sid = screenIntent.getStringExtra(EXTRA_SID);
-		FUserSession userSession = FUserSession.getInstance();
-		String urlString = userSession.getConnectionInfo().getConnectionURL();
+		if (savedInstanceState != null) {
+			Log.d("Formulize", "Restoring Webview");
+			webView.restoreState(savedInstanceState);
+		} else {
 
-		// Create URI Connection
-		URI baseURI = null;
-		try {
-			baseURI = new URI(urlString);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			// Parameters to access a screen
+			Intent screenIntent = getIntent();
+			String sid = screenIntent.getStringExtra(EXTRA_SID);
+			FUserSession userSession = FUserSession.getInstance();
+			String urlString = userSession.getConnectionInfo()
+					.getConnectionURL();
+
+			// Create URI Connection
+			URI baseURI = null;
+			try {
+				baseURI = new URI(urlString);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+
+			// Pass session cookies from HttpUrlConnection to the WebView
+			android.webkit.CookieSyncManager.createInstance(this);
+			android.webkit.CookieManager cookieManager = CookieManager
+					.getInstance();
+			java.net.CookieStore rawCookieStore = ((java.net.CookieManager) CookieHandler
+					.getDefault()).getCookieStore();
+
+			// Copy cookies from HttpURLConnection to WebView
+			List<HttpCookie> cookies = rawCookieStore.get(baseURI);
+			String url = baseURI.toString();
+			for (HttpCookie cookie : cookies) {
+				String setCookie = new StringBuilder(cookie.toString())
+						.append("; domain=").append(cookie.getDomain())
+						.append("; path=").append(cookie.getPath()).toString();
+				cookieManager.setCookie(url, setCookie);
+			}
+
+			// Load screen page
+			webView.setWebViewClient(new FScreenWebViewClient());
+			webView.setWebChromeClient(new WebChromeClient());
+			webView.getSettings().setJavaScriptEnabled(true);
+			String fFormURL = userSession.getConnectionInfo()
+					.getConnectionURL() + "modules/formulize/index.php?" + sid;
+
+			webView.loadUrl(fFormURL);
 		}
+	}
 
-		// Pass session cookies from HttpUrlConnection to the WebView
-		android.webkit.CookieSyncManager.createInstance(this); // WebView Cookie
-																// Manager
-		android.webkit.CookieManager cookieManager = CookieManager
-				.getInstance();
-		java.net.CookieStore rawCookieStore = ((java.net.CookieManager) CookieHandler
-				.getDefault()).getCookieStore(); // HttpUrlConnection Cookie
-													// Manager
+	protected void onSaveInstanceState(Bundle savedInstanceState) {
+		webView.saveState(savedInstanceState);
+		Log.d("Formulize", "Saving Webview");
 
-		// Copy cookies from HttpURLConnection to WebView
-		List<HttpCookie> cookies = rawCookieStore.get(baseURI);
-		String url = baseURI.toString();
-		for (HttpCookie cookie : cookies) {
-			String setCookie = new StringBuilder(cookie.toString())
-					.append("; domain=").append(cookie.getDomain())
-					.append("; path=").append(cookie.getPath()).toString();
-			cookieManager.setCookie(url, setCookie);
-		}
-
-		// Load screen page
-		webView.setWebViewClient(new FScreenWebViewClient());
-		webView.setWebChromeClient(new WebChromeClient());
-		webView.getSettings().setJavaScriptEnabled(true);
-		String fFormURL = userSession.getConnectionInfo().getConnectionURL()
-				+ "modules/formulize/index.php?" + sid;
-
-		Log.d("Formulize", "screenURL: " + fFormURL);
-
-		webView.loadUrl(fFormURL);
 	}
 
 	/**

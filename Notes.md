@@ -1,6 +1,3 @@
-When is the next meeting?
-Do we need to keep multiple logins?
-
 ## Current Tasks
 
 ### Keep login alive while Formulize is open

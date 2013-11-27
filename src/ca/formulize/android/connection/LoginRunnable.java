@@ -39,7 +39,7 @@ public class LoginRunnable implements Runnable {
 	
 	// Messages sent by this runnable
 	public final static int LOGIN_SUCESSFUL_MSG = 0;	// User logged into their connection successfully
-	public final static int LOGIN_UNSUCESSFUL_MSG = -2; // Unable to login, login credentials are probably incorrect
+	public final static int LOGIN_UNSUCESSFUL_MSG = 1; // Unable to login, login credentials are probably incorrect
 	public final static int LOGIN_ERROR_MSG = -1;		// Bad network connection, or invalid Formulize connection
 
 	private ConnectionInfo connectionInfo;
@@ -141,6 +141,8 @@ public class LoginRunnable implements Runnable {
 		b.putInt(EXTRA_LOGIN_RESPONSE_MSG, result);
 		msgObj.setData(b);
 		handler.sendMessage(msgObj);
+		
+		Log.d("Formulize", "Handler Message: " + result);
 	}
 
 	/**
