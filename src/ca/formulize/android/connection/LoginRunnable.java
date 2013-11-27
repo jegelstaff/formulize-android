@@ -17,6 +17,7 @@ import java.net.URLEncoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import ca.formulize.android.data.ConnectionInfo;
 
 /**
@@ -71,7 +72,8 @@ public class LoginRunnable implements Runnable {
 			InputStream in = new BufferedInputStream(
 					urlConnection.getInputStream());
 			String isUserLoggedIn = readInputToString(new InputStreamReader(in)).trim();
-			if (!isUserLoggedIn.equals("1") || !isUserLoggedIn.equals("0") ) {
+			if (!isUserLoggedIn.equals("1") && !isUserLoggedIn.equals("0") ) {
+				Log.d("Formulize", isUserLoggedIn);
 				throw new MalformedURLException();
 			}
 

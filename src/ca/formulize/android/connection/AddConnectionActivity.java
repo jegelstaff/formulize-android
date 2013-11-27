@@ -87,6 +87,7 @@ public class AddConnectionActivity extends FragmentActivity {
 			ConnectionInfo connection = dbHelper
 					.getConnection(selectedConnectionID);
 			connectionURLView.setText(connection.getConnectionURL());
+			connectionNameView.setText(connection.getConnectionName());
 
 			if (!connection.getUsername().equals("")) {
 				saveLoginCredentialsView.setChecked(true);

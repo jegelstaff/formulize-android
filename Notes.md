@@ -1,4 +1,22 @@
+When is the next meeting?
+Do we need to keep multiple logins?
+
 ## Current Tasks
+
+### Keep login alive while Formulize is open
+
+### Prepare for App Publishing
+
+* Designate master as the release branch and create a dev branch
+* Follow steps in the [Publishing Overview](http://developer.android.com/tools/publishing/publishing_overview.html), where the app needs to remove debugging related features.
+* Test the software on at least:
+	* Api Level 10 Phone (Gingerbread)
+	* Api Level 19 Phone (Kitkat)
+* High resolution Formulize Icon? Ideally resolutions in:
+	* 512 x 512 icon for Play store is required
+	* [Guidelines](http://developer.android.com/design/style/iconography.html)
+* We don't have to put it up on the Play store, we could load the .api to the Freeform.
+* Screen shots, promotional graphics for the Play store
 
 ### When the user re-opens Formulize, log back in to their last application
 * On every activity, when the application is `onPause()`, save the current activity to the preferences, along with the current connection being used.
@@ -6,11 +24,9 @@
 * `applist.php` needs to take additional parameters to just return the screen of a specific application.
 * A launcher activity should be added to read from the current preferences, so it returns the proper activity and connection that the user last opened.
 
+* For connections where the username and password are NOT saved, the user should be returned to the connection list when the application has been destroyed
+
 ### Use Action Sherlock to add Action Bar support to older devices
-
-### Check if there is internet connection before logging in!
-
-### Keep login alive while Formulize is open
 
 ### Validate whether user is connecting to an actual Formulize server
 
@@ -24,6 +40,10 @@
 * Then retrieve the results from network asynchronously, and update the list if there are changes compared to the cache.
 
 ### Take advantage of Fragments in Android to show a side bar of applications in the screen view on tablets?
+
+### Check if there is internet connection before logging in!
+
+### Handle connection cut offs (e.g. User went to the subway)
 
 ## Completed Tasks
 * Have a activity for setting up multiple Formulize sites:

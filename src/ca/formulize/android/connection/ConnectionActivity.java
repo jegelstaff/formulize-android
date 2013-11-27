@@ -16,11 +16,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBContract.ConnectionEntry;
@@ -39,9 +41,11 @@ public class ConnectionActivity extends FragmentActivity {
 
 	// UI References
 	private ListView connectionList;
+	private ProgressDialog progressDialog;
+	private Button addConnectionButton;
+
 	private FormulizeDBHelper dbHelper;
 	private SimpleCursorAdapter connectionAdapter;
-	private ProgressDialog progressDialog;
 
 	private ConnectionInfo selectedConnection;
 
@@ -49,28 +53,33 @@ public class ConnectionActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		connectionList = new ListView(this);
-		setContentView(connectionList);
-
-		registerForContextMenu(connectionList);
-
-		// Instantiate Connection List
+		// Try getting a list of connections
 		dbHelper = new FormulizeDBHelper(this);
 		Cursor connectionCursor = dbHelper.getConnectionList(-1);
-		String[] selectDBColumns = {
-				ConnectionEntry.COLUMN_NAME_CONNECTION_NAME,
-				ConnectionEntry.COLUMN_NAME_USERNAME };
-		int[] mappedViews = { android.R.id.text1, android.R.id.text2 };
-		connectionAdapter = new SimpleCursorAdapter(this,
-				android.R.layout.simple_list_item_2, connectionCursor,
-				selectDBColumns, mappedViews,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		
+		// If there aren't any prompt users to add new ones
+		if (connectionCursor.getCount() <= 0) {
+			showAddConnectionText();
+		} else {
+			
+			// Show available connections with connectionList
+			String[] selectDBColumns = {
+					ConnectionEntry.COLUMN_NAME_CONNECTION_NAME,
+					ConnectionEntry.COLUMN_NAME_USERNAME };
+			int[] mappedViews = { android.R.id.text1, android.R.id.text2 };
+			connectionAdapter = new SimpleCursorAdapter(this,
+					android.R.layout.simple_list_item_2, connectionCursor,
+					selectDBColumns, mappedViews,
+					CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-		connectionList.setAdapter(connectionAdapter);
+			connectionList = new ListView(this);
+			setContentView(connectionList);
+			registerForContextMenu(connectionList);
+			connectionList.setAdapter(connectionAdapter);
 
-		// Set up list item click listeners
-		OnItemClickListener mConnectionClickedListener = new OnConnectionClickListener();
-		connectionList.setOnItemClickListener(mConnectionClickedListener);
+			OnItemClickListener mConnectionClickedListener = new OnConnectionClickListener();
+			connectionList.setOnItemClickListener(mConnectionClickedListener);
+		}
 	}
 
 	@Override
@@ -122,12 +131,32 @@ public class ConnectionActivity extends FragmentActivity {
 			Cursor connectionCursor = dbHelper.getConnectionList(-1);
 			connectionAdapter.swapCursor(connectionCursor);
 			connectionAdapter.notifyDataSetChanged();
+			if (connectionCursor.getCount() <= 0) {
+				showAddConnectionText();
+			}
 			return true;
 		default:
 			return super.onContextItemSelected(item);
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private void showAddConnectionText() {
+		setContentView(R.layout.activity_connection);
+		addConnectionButton = (Button) findViewById(R.id.addConnectionButton);
+		addConnectionButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent addConnectionIntent = new Intent(ConnectionActivity.this,
+						AddConnectionActivity.class);
+				startActivity(addConnectionIntent);					
+			}
+		});
+	}
+	
 	private class OnConnectionClickListener implements OnItemClickListener {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
@@ -155,8 +184,7 @@ public class ConnectionActivity extends FragmentActivity {
 					|| selectedConnection.getUsername().equals("")) {
 				LoginDialogFragment loginDialog = new LoginDialogFragment();
 				Bundle args = new Bundle();
-				args.putParcelable(
-						LoginDialogFragment.EXTRA_CONNECITON_INFO,
+				args.putParcelable(LoginDialogFragment.EXTRA_CONNECITON_INFO,
 						selectedConnection);
 				loginDialog.setArguments(args);
 				loginDialog.show(
@@ -223,10 +251,11 @@ public class ConnectionActivity extends FragmentActivity {
 			int result = msg.getData().getInt(
 					LoginRunnable.EXTRA_LOGIN_RESPONSE_MSG);
 
-			switch(result) {
+			switch (result) {
 			case LoginRunnable.LOGIN_SUCESSFUL_MSG:
-					FUserSession.getInstance().setConnectionInfo(selectedConnection);
-	
+				FUserSession.getInstance()
+						.setConnectionInfo(selectedConnection);
+
 				// Go to application list once logged in
 				Intent viewApplicationsIntent = new Intent(activity,
 						ApplicationListActivity.class);
@@ -235,19 +264,16 @@ public class ConnectionActivity extends FragmentActivity {
 			case LoginRunnable.LOGIN_UNSUCESSFUL_MSG:
 				LoginDialogFragment loginDialog = new LoginDialogFragment();
 				Bundle args = new Bundle();
-				args.putParcelable(
-						LoginDialogFragment.EXTRA_CONNECITON_INFO,
+				args.putParcelable(LoginDialogFragment.EXTRA_CONNECITON_INFO,
 						selectedConnection);
-				args.putBoolean(LoginDialogFragment.EXTRA_IS_REATTEMPT,
-						true);
+				args.putBoolean(LoginDialogFragment.EXTRA_IS_REATTEMPT, true);
 				loginDialog.setArguments(args);
 				loginDialog.show(activity.getSupportFragmentManager(), "login");
 				break;
 			default:
 				Toast connectionToast = Toast.makeText(activity,
-						R.string.toast_connection_failed,
-						Toast.LENGTH_SHORT);
-				connectionToast.show();			
+						R.string.toast_connection_failed, Toast.LENGTH_SHORT);
+				connectionToast.show();
 			}
 		}
 	};
