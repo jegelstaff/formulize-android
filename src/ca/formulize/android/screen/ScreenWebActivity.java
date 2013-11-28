@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.webkit.WebViewClient;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
 import ca.formulize.android.connection.LogoutAsyncTask;
+import ca.formulize.android.connection.LogoutDialogFragment;
 import ca.formulize.android.data.ConnectionInfo;
 
 /**
@@ -96,6 +98,18 @@ public class ScreenWebActivity extends FragmentActivity {
 			webView.loadUrl(fFormURL);
 		}
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		FUserSession.getInstance().startKeepAliveSession();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		FUserSession.getInstance().endKeepAliveSession();
+	}
 
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		webView.saveState(savedInstanceState);
@@ -128,9 +142,7 @@ public class ScreenWebActivity extends FragmentActivity {
 			onBackPressed();
 			return true;
 		case R.id.logout:
-			ConnectionInfo connectionInfo = FUserSession.getInstance()
-					.getConnectionInfo();
-			new LogoutAsyncTask(this).execute(connectionInfo);
+			new LogoutDialogFragment().show(this.getSupportFragmentManager(), "logout");;
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,11 +56,6 @@ public class LoginRunnable implements Runnable {
 		int responseCode = 0;
 
 		try {
-
-			// Set up cookie manager
-			CookieHandler.setDefault(new CookieManager(null,
-					CookiePolicy.ACCEPT_ALL));
-
 			// Check if the connection is a valid Formulize connection
 			urlConnection = (HttpURLConnection) new URL(
 					connectionInfo.getConnectionURL() + "isUserLoggedIn.php")

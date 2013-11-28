@@ -27,6 +27,7 @@ import android.widget.ListView;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
 import ca.formulize.android.connection.LogoutAsyncTask;
+import ca.formulize.android.connection.LogoutDialogFragment;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 
@@ -57,7 +58,7 @@ public class ApplicationListActivity extends FragmentActivity {
 		applicationListView = new ListView(this);
 		applicationListView
 				.setOnItemClickListener(new ApplicationListClickListener());
-		
+
 		setContentView(applicationListView);
 		connectionInfo = FUserSession.getInstance().getConnectionInfo();
 
@@ -71,9 +72,24 @@ public class ApplicationListActivity extends FragmentActivity {
 			new MenuListRequestTask(this).execute(connectionInfo);
 		}
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		FUserSession.getInstance().startKeepAliveSession();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		FUserSession.getInstance().endKeepAliveSession();
+	}
 
 	/**
-	 * 
+	 * Loads the list of available applications. It also if there are any
+	 * applications available to the user. If there aren't any, the user would
+	 * be notified through a DialogFragment and be returned to the connection
+	 * activity.
 	 */
 	private void loadApplicationList(FormulizeApplication[] applications) {
 		applicationListAdapter = new ArrayAdapter<FormulizeApplication>(this,
@@ -132,39 +148,16 @@ public class ApplicationListActivity extends FragmentActivity {
 			//
 			return true;
 		case R.id.logout:
-			new LogoutAsyncTask(this).execute(connectionInfo);
+			new LogoutDialogFragment().show(this.getSupportFragmentManager(), "logout");;
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/**
-	 * Checks if there are any applications available to the user. If there
-	 * aren't any, the user would be notified through a DialogFragment and be
-	 * returned to the connection activity.
-	 */
-	private void checkAvailableApplications() {
-		if (applications.length <= 0) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(R.string.dialog_title_no_apps)
-					.setMessage(R.string.dialog_message_no_apps)
-					.setCancelable(false)
-					.setPositiveButton(android.R.string.ok,
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									// Log the user out as this dialog closes
-									new LogoutAsyncTask(
-											ApplicationListActivity.this)
-											.execute(connectionInfo);
-								}
-							});
-			builder.show();
-		} else {
-			Log.d("Formulize", "Found " + applications.length + " applications");
-		}
+	
+	@Override
+	public void onBackPressed() {
+		// Pressing back in this activities implies the user is attempting to logout
+		new LogoutDialogFragment().show(this.getSupportFragmentManager(), "logout");;
 	}
 
 	private class ApplicationListClickListener implements OnItemClickListener {

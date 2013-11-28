@@ -1,5 +1,8 @@
 package ca.formulize.android.connection;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 
@@ -16,6 +19,7 @@ public class FUserSession {
 	public final static String CONNECTION_FAILED = "Invalid Formulize Connection";
 
 	private static FUserSession instance;
+	ScheduledThreadPoolExecutor keepAliveExecutor;
 	private ConnectionInfo connectionInfo;
 	private String userToken;
 	public FormulizeApplication[] applications;
@@ -41,5 +45,14 @@ public class FUserSession {
 
 	public String getUserToken() {
 		return userToken;
+	}
+	
+	public void startKeepAliveSession() {
+		keepAliveExecutor = new ScheduledThreadPoolExecutor(1);
+		keepAliveExecutor.scheduleAtFixedRate(new KeepAliveRunnable(connectionInfo, null), 3, 3, TimeUnit.SECONDS);
+	}
+	
+	public void endKeepAliveSession() {
+		keepAliveExecutor.shutdown();
 	}
 }

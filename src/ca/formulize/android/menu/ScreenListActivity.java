@@ -15,8 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
-import ca.formulize.android.connection.LogoutAsyncTask;
-import ca.formulize.android.data.ConnectionInfo;
+import ca.formulize.android.connection.LogoutDialogFragment;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.data.FormulizeLink;
 import ca.formulize.android.screen.ScreenWebActivity;
@@ -63,6 +62,18 @@ public class ScreenListActivity extends FragmentActivity {
 		linksListView.setOnItemClickListener(new ScreenListClickListener());
 		setContentView(linksListView);
 	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		FUserSession.getInstance().startKeepAliveSession();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		FUserSession.getInstance().endKeepAliveSession();
+	}
 
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -105,9 +116,7 @@ public class ScreenListActivity extends FragmentActivity {
 			onBackPressed();
 			return true;
 		case R.id.logout:
-			ConnectionInfo connectionInfo = FUserSession.getInstance()
-					.getConnectionInfo();
-			new LogoutAsyncTask(this).execute(connectionInfo);
+			new LogoutDialogFragment().show(this.getSupportFragmentManager(), "logout");;
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

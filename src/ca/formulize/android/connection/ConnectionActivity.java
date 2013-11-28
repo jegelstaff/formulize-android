@@ -1,5 +1,9 @@
 package ca.formulize.android.connection;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
@@ -57,11 +61,10 @@ public class ConnectionActivity extends FragmentActivity {
 		dbHelper = new FormulizeDBHelper(this);
 		Cursor connectionCursor = dbHelper.getConnectionList(-1);
 		
-		// If there aren't any prompt users to add new ones
 		if (connectionCursor.getCount() <= 0) {
+			// Prompt user to add new connections
 			showAddConnectionText();
 		} else {
-			
 			// Show available connections with connectionList
 			String[] selectDBColumns = {
 					ConnectionEntry.COLUMN_NAME_CONNECTION_NAME,
@@ -79,6 +82,10 @@ public class ConnectionActivity extends FragmentActivity {
 
 			OnItemClickListener mConnectionClickedListener = new OnConnectionClickListener();
 			connectionList.setOnItemClickListener(mConnectionClickedListener);
+			
+			// Set up cookie manager
+			CookieHandler.setDefault(new CookieManager(null,
+					CookiePolicy.ACCEPT_ALL));
 		}
 	}
 

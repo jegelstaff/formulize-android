@@ -16,6 +16,8 @@
     <string name="progress_logout">Logging out</string>
     <string name="progress_get_apps">Getting Available Applications</string>
     <string name="dialog_title_no_apps">No Available Applications</string>
+    <string name="dialog_title_logout">Logout?</string>
+    <string name="dialog_message_logout">Are you sure you want to logout?</string>
     <string name="dialog_message_no_apps">You do not have access to any applications, please contact your webmaster for support.</string>
     
     <!--  Activity Title Names -->
