@@ -66,7 +66,7 @@ public class ScreenListActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		FUserSession.getInstance().startKeepAliveSession();
+		FUserSession.getInstance().startKeepAliveSession(this);
 	}
 	
 	@Override

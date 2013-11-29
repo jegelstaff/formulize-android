@@ -82,11 +82,16 @@ public class ConnectionActivity extends FragmentActivity {
 
 			OnItemClickListener mConnectionClickedListener = new OnConnectionClickListener();
 			connectionList.setOnItemClickListener(mConnectionClickedListener);
-			
-			// Set up cookie manager
-			CookieHandler.setDefault(new CookieManager(null,
-					CookiePolicy.ACCEPT_ALL));
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();			
+		
+		// Set up cookie manager, removing any user sessions
+		CookieHandler.setDefault(new CookieManager(null,
+				CookiePolicy.ACCEPT_ALL));
 	}
 
 	@Override
@@ -198,11 +203,8 @@ public class ConnectionActivity extends FragmentActivity {
 						ConnectionActivity.this.getSupportFragmentManager(),
 						"login");
 			} else {
-				// FUserSession session = FUserSession.getInstance();
 
 				// Start Async Login, go to Application List if successful
-				// session.createConnection(ConnectionActivity.this,
-				// selectedConnection);
 				progressDialog = new ProgressDialog(ConnectionActivity.this);
 				progressDialog.setMessage(getString(R.string.progress_login));
 				progressDialog.show();

@@ -1,6 +1,5 @@
 package ca.formulize.android.connection;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -15,6 +14,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
+import ca.formulize.android.util.ConnectionUtil;
 
 /**
  * This AsyncTask logs the user out of their Formulize account if they are
@@ -92,7 +92,7 @@ public class LogoutAsyncTask extends
 			if (responseCode != 200 && responseCode != 0) {
 				InputStreamReader in = new InputStreamReader(
 						urlConnection.getErrorStream());
-				readInputToString(in);
+				ConnectionUtil.readInputToString(in);
 
 			}
 			e.printStackTrace();
@@ -113,28 +113,4 @@ public class LogoutAsyncTask extends
 		activity.startActivity(connectionIntent);
 	}
 
-	/**
-	 * Helper function to convert an entire input stream into a String
-	 * 
-	 * @param in
-	 * @return String representation of the input stream
-	 */
-	private String readInputToString(InputStreamReader in) {
-		BufferedReader reader = new BufferedReader(in);
-		StringBuilder stringBuilder = new StringBuilder();
-
-		try {
-			// Read server response
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				stringBuilder.append(line + "\n");
-			}
-			reader.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return stringBuilder.toString();
-
-	}
 }

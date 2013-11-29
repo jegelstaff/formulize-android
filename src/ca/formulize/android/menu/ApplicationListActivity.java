@@ -1,7 +1,6 @@
 package ca.formulize.android.menu;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +29,7 @@ import ca.formulize.android.connection.LogoutAsyncTask;
 import ca.formulize.android.connection.LogoutDialogFragment;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
+import ca.formulize.android.util.ConnectionUtil;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -76,7 +76,7 @@ public class ApplicationListActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		FUserSession.getInstance().startKeepAliveSession();
+		FUserSession.getInstance().startKeepAliveSession(this);
 	}
 	
 	@Override
@@ -229,7 +229,7 @@ public class ApplicationListActivity extends FragmentActivity {
 
 				InputStream in = new BufferedInputStream(
 						urlConnection.getInputStream());
-				response = readInputToString(new InputStreamReader(in));
+				response = ConnectionUtil.readInputToString(new InputStreamReader(in));
 
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
@@ -239,7 +239,7 @@ public class ApplicationListActivity extends FragmentActivity {
 				if (responseCode != 200 && responseCode != 0) {
 					InputStreamReader in = new InputStreamReader(
 							urlConnection.getErrorStream());
-					readInputToString(in);
+					ConnectionUtil.readInputToString(in);
 				}
 				e.printStackTrace();
 				return null;
@@ -268,31 +268,6 @@ public class ApplicationListActivity extends FragmentActivity {
 
 				loadApplicationList(applications);
 			}
-		}
-
-		/**
-		 * Helper function to convert an entire input stream into a String
-		 * 
-		 * @param in
-		 * @return String representation of the input stream
-		 */
-		private String readInputToString(InputStreamReader in) {
-			BufferedReader reader = new BufferedReader(in);
-			StringBuilder stringBuilder = new StringBuilder();
-
-			try {
-				// Read server response
-				String line = null;
-				while ((line = reader.readLine()) != null) {
-					stringBuilder.append(line + "\n");
-				}
-				reader.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return stringBuilder.toString();
-
 		}
 	}
 }
