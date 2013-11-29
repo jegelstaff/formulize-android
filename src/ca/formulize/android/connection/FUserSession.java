@@ -21,7 +21,7 @@ import ca.formulize.android.data.FormulizeApplication;
  * 
  */
 public class FUserSession {
-	private static final int KEEP_ALIVE_INTERVAL = 300;
+	private static final int KEEP_ALIVE_INTERVAL = 10;
 
 	private static FUserSession instance;
 	private ScheduledThreadPoolExecutor keepAliveExecutor;
