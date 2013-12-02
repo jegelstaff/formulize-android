@@ -32,6 +32,7 @@ import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBContract.ConnectionEntry;
 import ca.formulize.android.data.FormulizeDBHelper;
 import ca.formulize.android.menu.ApplicationListActivity;
+import ca.formulize.android.util.ConnectionUtil;
 
 /**
  * Represents the connection list screen where users can choose from a list of
@@ -60,7 +61,7 @@ public class ConnectionActivity extends FragmentActivity {
 		// Try getting a list of connections
 		dbHelper = new FormulizeDBHelper(this);
 		Cursor connectionCursor = dbHelper.getConnectionList(-1);
-		
+
 		if (connectionCursor.getCount() <= 0) {
 			// Prompt user to add new connections
 			showAddConnectionText();
@@ -84,11 +85,11 @@ public class ConnectionActivity extends FragmentActivity {
 			connectionList.setOnItemClickListener(mConnectionClickedListener);
 		}
 	}
-	
+
 	@Override
 	protected void onResume() {
-		super.onResume();			
-		
+		super.onResume();
+
 		// Set up cookie manager, removing any user sessions
 		CookieHandler.setDefault(new CookieManager(null,
 				CookiePolicy.ACCEPT_ALL));
@@ -159,16 +160,16 @@ public class ConnectionActivity extends FragmentActivity {
 		setContentView(R.layout.activity_connection);
 		addConnectionButton = (Button) findViewById(R.id.addConnectionButton);
 		addConnectionButton.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				Intent addConnectionIntent = new Intent(ConnectionActivity.this,
-						AddConnectionActivity.class);
-				startActivity(addConnectionIntent);					
+				Intent addConnectionIntent = new Intent(
+						ConnectionActivity.this, AddConnectionActivity.class);
+				startActivity(addConnectionIntent);
 			}
 		});
 	}
-	
+
 	private class OnConnectionClickListener implements OnItemClickListener {
 		public void onItemClick(AdapterView<?> parent, View v, int position,
 				long id) {
@@ -190,6 +191,14 @@ public class ConnectionActivity extends FragmentActivity {
 					connectionName, username, password);
 
 			Log.d("Formulize", "Connection Selected");
+
+			// Do not make any connections if there is no Internet
+			if (!ConnectionUtil.isOnline(ConnectionActivity.this)) {
+				new NoNetworkDialogFragment().show(
+						ConnectionActivity.this.getSupportFragmentManager(),
+						"no network");
+				return;
+			}
 
 			// If no user name is in the connection info, prompt for login
 			if (selectedConnection.getUsername() == null

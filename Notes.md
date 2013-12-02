@@ -1,5 +1,7 @@
 ## Current Tasks
 
+### Keep WebView state on screen orientation change
+
 ### Keep login alive while Formulize is open
 
 ### Prepare for App Publishing

@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 public class ConnectionUtil {
 
 	/**
@@ -29,5 +33,19 @@ public class ConnectionUtil {
 		}
 		return stringBuilder.toString();
 
+	}
+
+	/**
+	 * Check if the user is connected to the Internet.
+	 * 
+	 * @param context The current context of the application
+	 * @return True if the user is connected to the Internet, else false
+	 */
+	static public Boolean isOnline(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 	}
 }

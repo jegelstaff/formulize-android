@@ -5,7 +5,6 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -23,9 +22,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
-import ca.formulize.android.connection.LogoutAsyncTask;
 import ca.formulize.android.connection.LogoutDialogFragment;
-import ca.formulize.android.data.ConnectionInfo;
 
 /**
  * Displays a Formulize screen given its screen ID. It assumes that there exists
@@ -36,6 +33,7 @@ import ca.formulize.android.data.ConnectionInfo;
  * @author timch326
  * 
  */
+@SuppressLint("SetJavaScriptEnabled")
 public class ScreenWebActivity extends FragmentActivity {
 	public static final String EXTRA_SID = "ca.formulize.android.extras.sid";
 
@@ -108,7 +106,7 @@ public class ScreenWebActivity extends FragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		FUserSession.getInstance().endKeepAliveSession();
+		FUserSession.getInstance().endKeepAliveSession(this);
 	}
 
 	protected void onSaveInstanceState(Bundle savedInstanceState) {

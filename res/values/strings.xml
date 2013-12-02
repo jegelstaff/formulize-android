@@ -3,24 +3,27 @@
 
     <string name="app_name">Formulize</string>
     <string name="action_settings">Settings</string>
-    
-    <!--  Login Related Strings -->
+
+    <!-- Login Related Strings -->
     <string name="sign_in_label">Sign in</string>
     <string name="reattempt_message">Incorrect username or password Try again.</string>
-    
+
     <!-- Connection Strings -->
     <string name="toast_connection_updated">Connection Updated</string>
     <string name="toast_connection_added">Connection Added</string>
     <string name="toast_connection_failed">Invalid Formulize Connection</string>
+    <string name="toast_no_network_connection">Network Connection Lost</string>
     <string name="progress_login">Logging in</string>
     <string name="progress_logout">Logging out</string>
     <string name="progress_get_apps">Getting Available Applications</string>
     <string name="dialog_title_no_apps">No Available Applications</string>
     <string name="dialog_title_logout">Logout?</string>
+    <string name="dialog_title_no_network">Cannot Connect to Formulize</string>
     <string name="dialog_message_logout">Are you sure you want to logout?</string>
     <string name="dialog_message_no_apps">You do not have access to any applications, please contact your webmaster for support.</string>
+    <string name="dialog_message_no_network">Connect to a Wi-Fi or cellular data network to access Formulize.</string>
     
-    <!--  Activity Title Names -->
+    <!-- Activity Title Names -->
     <string name="title_activity_form">Form</string>
     <string name="title_activity_application_list">Applications</string>
     <string name="title_activity_form_list">Application Forms</string>

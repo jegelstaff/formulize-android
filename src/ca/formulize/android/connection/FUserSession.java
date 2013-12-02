@@ -3,19 +3,23 @@ package ca.formulize.android.connection;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.widget.Toast;
 import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
-import ca.formulize.android.data.FormulizeApplication;
+import ca.formulize.android.util.ConnectionUtil;
 
 /**
- * Represents the user's login information. Other classes may retrieve this to
- * get the login information on a user. Note: A user's login session token is
- * stored in the CookieManager in the HttpUrlConnection Library.
+ * Represents the user's login session. Other classes may retrieve this to get
+ * the login information on a user.
+ * 
+ * Note: A user's login session token is stored in the CookieManager in the
+ * HttpUrlConnection Library.
  * 
  * @author timch326
  * 
@@ -27,7 +31,6 @@ public class FUserSession {
 	private ScheduledThreadPoolExecutor keepAliveExecutor;
 	private ConnectionInfo connectionInfo;
 	private String userToken;
-	public FormulizeApplication[] applications;
 
 	public static FUserSession getInstance() {
 		if (instance == null) {
@@ -52,23 +55,32 @@ public class FUserSession {
 		return userToken;
 	}
 
-	public void startKeepAliveSession(FragmentActivity activity) {
+	public void startKeepAliveSession(Context context) {
+
 		keepAliveExecutor = new ScheduledThreadPoolExecutor(1);
-		keepAliveExecutor.scheduleAtFixedRate(new LoginRunnable(
-				connectionInfo, new KeepAliveHandler(activity)), KEEP_ALIVE_INTERVAL, KEEP_ALIVE_INTERVAL, TimeUnit.SECONDS);
+		keepAliveExecutor.scheduleAtFixedRate(new LoginRunnable(connectionInfo,
+				new KeepAliveHandler(context)), 0, KEEP_ALIVE_INTERVAL,
+				TimeUnit.SECONDS);
 	}
 
-	public void endKeepAliveSession() {
+	public void endKeepAliveSession(Context context) {
 		keepAliveExecutor.shutdown();
+
+		ComponentName receiver = new ComponentName(context,
+				NetworkStateReceiver.class);
+		PackageManager pm = context.getPackageManager();
+		pm.setComponentEnabledSetting(receiver,
+				PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+				PackageManager.DONT_KILL_APP);
 	}
 
 	private static class KeepAliveHandler extends Handler {
 
-		private final FragmentActivity activity;
+		private final Context context;
 
-		public KeepAliveHandler(FragmentActivity activity) {
+		public KeepAliveHandler(Context context) {
 			super();
-			this.activity = activity;
+			this.context = context;
 		}
 
 		public void handleMessage(Message msg) {
@@ -81,12 +93,34 @@ public class FUserSession {
 				break;
 			default:
 				// Keep alive failed, return to connection list
-				Intent connectionIntent = new Intent(activity,
-						ConnectionActivity.class);
-				activity.startActivity(connectionIntent);
 
-				Toast connectionToast = Toast.makeText(activity,
-						R.string.toast_connection_failed, Toast.LENGTH_SHORT);
+				Toast connectionToast;
+
+				if (!ConnectionUtil.isOnline(context)) {
+
+					// Enable NetworkStateReceiver to listen for network changes
+					ComponentName receiver = new ComponentName(context,
+							NetworkStateReceiver.class);
+					PackageManager pm = context.getPackageManager();
+					pm.setComponentEnabledSetting(receiver,
+							PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+							PackageManager.DONT_KILL_APP);
+
+					connectionToast = Toast.makeText(context,
+							R.string.toast_no_network_connection,
+							Toast.LENGTH_SHORT);
+				} else {
+					// Error with the Formulize Connection, return to
+					// ConnectionActivity
+					connectionToast = Toast.makeText(context,
+							R.string.toast_connection_failed,
+							Toast.LENGTH_SHORT);
+
+					Intent connectionIntent = new Intent(context,
+							ConnectionActivity.class);
+					context.startActivity(connectionIntent);
+				}
+
 				connectionToast.show();
 			}
 		}

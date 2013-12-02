@@ -108,7 +108,8 @@ public class LogoutAsyncTask extends
 			progressDialog = null;
 		}
 		super.onPostExecute(result);
-
+		
+		FUserSession.getInstance().endKeepAliveSession(activity);
 		Intent connectionIntent = new Intent(activity, ConnectionActivity.class);
 		activity.startActivity(connectionIntent);
 	}

@@ -82,7 +82,7 @@ public class ApplicationListActivity extends FragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		FUserSession.getInstance().endKeepAliveSession();
+		FUserSession.getInstance().endKeepAliveSession(this);
 	}
 
 	/**
