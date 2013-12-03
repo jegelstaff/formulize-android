@@ -1,10 +1,11 @@
-package ca.formulize.android.screen;
+package ca.formulize.android.ui;
 
 import java.net.CookieHandler;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -22,7 +23,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
-import ca.formulize.android.connection.LogoutDialogFragment;
 
 /**
  * Displays a Formulize screen given its screen ID. It assumes that there exists

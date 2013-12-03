@@ -1,4 +1,4 @@
-package ca.formulize.android.connection;
+package ca.formulize.android.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

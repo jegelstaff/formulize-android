@@ -16,7 +16,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
         <receiver
             android:name="ca.formulize.android.connection.NetworkStateReceiver"
             android:enabled="false" >
@@ -26,47 +25,27 @@
         </receiver>
 
         <activity
-            android:name="com.example.formulizeprototype.LoginActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
-            android:name="com.example.formulizeprototype.FormActivity"
-            android:label="@string/title_activity_form"
-            android:parentActivityName="com.example.formulizeprototype.LoginActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.formulizeprototype.LoginActivity" />
-        </activity>
-        <activity
-            android:name="ca.formulize.android.menu.ApplicationListActivity"
+            android:name="ca.formulize.android.ui.ApplicationListActivity"
             android:label="@string/title_activity_application_list" >
         </activity>
         <activity
-            android:name="ca.formulize.android.menu.ScreenListActivity"
+            android:name="ca.formulize.android.ui.ScreenListActivity"
             android:label="@string/title_activity_form_list"
-            android:parentActivityName="ca.formulize.android.menu.ApplicationListActivity" >
+            android:parentActivityName="ca.formulize.android.ui.ApplicationListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.formulizeprototype.ApplicationListActivity" />
         </activity>
         <activity
-            android:name="com.example.formulizeprototype.ScreenActivity"
-            android:label="@string/title_activity_screen"
-            android:parentActivityName="ca.formulize.android.menu.ScreenListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.formulizeprototype.ScreenListActivity" />
-        </activity>
-        <activity
-            android:name="ca.formulize.android.screen.ScreenWebActivity"
+            android:name="ca.formulize.android.ui.ScreenWebActivity"
             android:label="@string/title_activity_screen_web"
-            android:parentActivityName="ca.formulize.android.menu.ScreenListActivity" >
+            android:parentActivityName="ca.formulize.android.ui.ScreenListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.formulizeprototype.ScreenListActivity" />
         </activity>
         <activity
-            android:name="ca.formulize.android.connection.ConnectionActivity"
+            android:name="ca.formulize.android.ui.ConnectionActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,9 +54,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="ca.formulize.android.connection.AddConnectionActivity"
+            android:name="ca.formulize.android.ui.AddConnectionActivity"
             android:label="@string/title_activity_add_connection"
-            android:parentActivityName="ca.formulize.android.connection.ConnectionActivity" >
+            android:parentActivityName="ca.formulize.android.ui.ConnectionActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ca.formulize.android.connection.ConnectionActivity" />

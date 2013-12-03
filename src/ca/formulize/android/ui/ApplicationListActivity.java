@@ -1,4 +1,4 @@
-package ca.formulize.android.menu;
+package ca.formulize.android.ui;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -26,7 +26,6 @@ import android.widget.ListView;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
 import ca.formulize.android.connection.LogoutAsyncTask;
-import ca.formulize.android.connection.LogoutDialogFragment;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.util.ConnectionUtil;

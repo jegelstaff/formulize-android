@@ -1,4 +1,4 @@
-package ca.formulize.android.connection;
+package ca.formulize.android.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import ca.formulize.android.R;
+import ca.formulize.android.connection.LoginRunnable;
 import ca.formulize.android.data.ConnectionInfo;
 
 /**

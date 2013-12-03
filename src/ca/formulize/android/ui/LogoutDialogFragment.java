@@ -1,4 +1,4 @@
-package ca.formulize.android.connection;
+package ca.formulize.android.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import ca.formulize.android.R;
+import ca.formulize.android.connection.FUserSession;
+import ca.formulize.android.connection.LogoutAsyncTask;
 import ca.formulize.android.data.ConnectionInfo;
 
 /**

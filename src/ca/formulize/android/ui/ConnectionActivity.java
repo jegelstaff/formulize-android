@@ -1,4 +1,4 @@
-package ca.formulize.android.connection;
+package ca.formulize.android.ui;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -28,10 +28,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import ca.formulize.android.R;
+import ca.formulize.android.connection.FUserSession;
+import ca.formulize.android.connection.LoginRunnable;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBContract.ConnectionEntry;
 import ca.formulize.android.data.FormulizeDBHelper;
-import ca.formulize.android.menu.ApplicationListActivity;
 import ca.formulize.android.util.ConnectionUtil;
 
 /**

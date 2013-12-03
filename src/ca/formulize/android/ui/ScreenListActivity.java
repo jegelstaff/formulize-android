@@ -1,4 +1,4 @@
-package ca.formulize.android.menu;
+package ca.formulize.android.ui;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
@@ -15,10 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import ca.formulize.android.R;
 import ca.formulize.android.connection.FUserSession;
-import ca.formulize.android.connection.LogoutDialogFragment;
 import ca.formulize.android.data.FormulizeApplication;
 import ca.formulize.android.data.FormulizeLink;
-import ca.formulize.android.screen.ScreenWebActivity;
 
 /**
  * Displays the available screens of a chosen application. The activity expects

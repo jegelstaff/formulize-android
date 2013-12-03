@@ -12,6 +12,7 @@ import android.os.Message;
 import android.widget.Toast;
 import ca.formulize.android.R;
 import ca.formulize.android.data.ConnectionInfo;
+import ca.formulize.android.ui.ConnectionActivity;
 import ca.formulize.android.util.ConnectionUtil;
 
 /**

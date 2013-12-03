@@ -1,4 +1,4 @@
-package ca.formulize.android.connection;
+package ca.formulize.android.ui;
 
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import ca.formulize.android.R;
+import ca.formulize.android.connection.LoginRunnable;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.data.FormulizeDBHelper;
 
