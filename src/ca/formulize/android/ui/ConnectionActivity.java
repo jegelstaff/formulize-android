@@ -38,7 +38,7 @@ import ca.formulize.android.util.ConnectionUtil;
 /**
  * Represents the connection list screen where users can choose from a list of
  * connections they have created in {@link AddConnectionActivity} to connect to
- * it.
+ * Formulize servers.
  * 
  * @author timch326
  * 
@@ -52,7 +52,6 @@ public class ConnectionActivity extends FragmentActivity {
 
 	private FormulizeDBHelper dbHelper;
 	private SimpleCursorAdapter connectionAdapter;
-
 	private ConnectionInfo selectedConnection;
 
 	@Override
@@ -155,7 +154,8 @@ public class ConnectionActivity extends FragmentActivity {
 	}
 
 	/**
-	 * 
+	 * Replaces the usual connection list with a prompt to go to
+	 * {@link AddConnectionActivity}.
 	 */
 	private void showAddConnectionText() {
 		setContentView(R.layout.activity_connection);

@@ -16,8 +16,9 @@ import ca.formulize.android.ui.ConnectionActivity;
 import ca.formulize.android.util.ConnectionUtil;
 
 /**
- * Represents the user's login session. Other classes may retrieve this to get
- * the login information on a user.
+ * Singleton representation of the user's login session. Other classes may
+ * retrieve this to get the login information on a user. User name and password
+ * of the user is stored here, even if "Remember me" is not checked by the user.
  * 
  * Note: A user's login session token is stored in the CookieManager in the
  * HttpUrlConnection Library.
@@ -26,12 +27,12 @@ import ca.formulize.android.util.ConnectionUtil;
  * 
  */
 public class FUserSession {
+
 	private static final int KEEP_ALIVE_INTERVAL = 10;
 
 	private static FUserSession instance;
 	private ScheduledThreadPoolExecutor keepAliveExecutor;
 	private ConnectionInfo connectionInfo;
-	private String userToken;
 
 	public static FUserSession getInstance() {
 		if (instance == null) {
@@ -52,18 +53,29 @@ public class FUserSession {
 		this.connectionInfo = connectionInfo;
 	}
 
-	public String getUserToken() {
-		return userToken;
-	}
-
+	/**
+	 * Keeps a user session from being timed out when the application is
+	 * running. This should be called only after a user has logged into a
+	 * Formulize account, and a Connection Info is stored in this object.
+	 * 
+	 * @param context
+	 *            The current context of the Android application
+	 */
 	public void startKeepAliveSession(Context context) {
 
 		keepAliveExecutor = new ScheduledThreadPoolExecutor(1);
 		keepAliveExecutor.scheduleAtFixedRate(new LoginRunnable(connectionInfo,
 				new KeepAliveHandler(context)), 0, KEEP_ALIVE_INTERVAL,
-				TimeUnit.SECONDS);
+				TimeUnit.MINUTES);
 	}
 
+	/**
+	 * Stops the application from keeping the user session alive. Should be
+	 * called when a user logs out, or when the application is suspended.
+	 * 
+	 * @param context
+	 *            The current context of the Android application
+	 */
 	public void endKeepAliveSession(Context context) {
 		keepAliveExecutor.shutdown();
 
@@ -75,6 +87,15 @@ public class FUserSession {
 				PackageManager.DONT_KILL_APP);
 	}
 
+	/**
+	 * Formulize login handler that is used for keeping a user session from
+	 * timing out. It handles lost network connection by waiting for the
+	 * connection to be re-established, other errors will be handled by
+	 * returning to {@link ConnectionActivity}.
+	 * 
+	 * @author timch326
+	 * 
+	 */
 	private static class KeepAliveHandler extends Handler {
 
 		private final Context context;

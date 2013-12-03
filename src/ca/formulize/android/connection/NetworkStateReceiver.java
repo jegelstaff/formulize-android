@@ -13,7 +13,7 @@ import android.util.Log;
  * Used to handle changes in network connection. If Internet connection is
  * available, the keep alive routine is restarted.
  * 
- * The receiver should be only enabled when there is an active connection.
+ * This receiver should only be enabled when the network connection needs to be re-established.
  * 
  * @author timch326
  * 

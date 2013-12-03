@@ -32,6 +32,7 @@ import ca.formulize.android.util.ConnectionUtil;
 public class LogoutAsyncTask extends
 		AsyncTask<ConnectionInfo, Integer, Integer> {
 
+	// Messages that could be sent by the logout routine
 	public int LOGOUT_SUCCESSFUL_MSG = 0;
 	public int LOGOUT_FAILED_MSG = -1;
 
@@ -72,7 +73,7 @@ public class LogoutAsyncTask extends
 			urlConnection.connect();
 			responseCode = urlConnection.getResponseCode();
 
-			// Check For Cookies
+			// Get the list of cookies received
 			List<String> cookies = urlConnection.getHeaderFields().get(
 					"Set-Cookie");
 			Log.d("Formulize", "Cookies:" + cookies.toString());

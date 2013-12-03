@@ -17,20 +17,32 @@ import android.util.Log;
 import ca.formulize.android.data.ConnectionInfo;
 import ca.formulize.android.util.ConnectionUtil;
 
+/**
+ * Asynchronous routine that logs user into a Formulize account given a valid
+ * {@link ConnectionInfo}. A successful login would store user session cookies
+ * in {@link java.net.CookieManager}. A {@link Handler} needs to given to allow
+ * the application to respond to the messages this object sends.
+ * 
+ * @author timch326
+ */
 public class LoginRunnable implements Runnable {
-	
+
 	// The Bundle key that this runnable uses to send messages to handlers
 	public final static String EXTRA_LOGIN_RESPONSE_MSG = "ca.formulize.android.extras.LoginResponseMsg";
-
-	// Messages sent by this runnable
-	public final static int LOGIN_SUCESSFUL_MSG = 0; // User logged into their connection successfully
-	public final static int LOGIN_UNSUCESSFUL_MSG = 1; // Unable to login, login credentials are probably incorrect
-	public final static int LOGIN_ERROR_MSG = -1; // Bad network connection, or invalid Formulize connection
 
 	private ConnectionInfo connectionInfo;
 	private Handler handler;
 
-	private int count = 0;
+	/*
+	 * Messages to be handled by a Handler
+	 */
+
+	// User logged into their connection successfully
+	public final static int LOGIN_SUCESSFUL_MSG = 0;
+	// Unable to login, login credentials are probably incorrect
+	public final static int LOGIN_UNSUCESSFUL_MSG = 1;
+	// Bad network connection, or invalid Formulize connection
+	public final static int LOGIN_ERROR_MSG = -1;
 
 	public LoginRunnable(ConnectionInfo connectionInfo, Handler handler) {
 		super();
@@ -47,13 +59,11 @@ public class LoginRunnable implements Runnable {
 				returnResponse(LOGIN_SUCESSFUL_MSG);
 			} else {
 				attemptLogin(connectionInfo);
-				if (isUserLoggedIn(connectionInfo)) 
+				if (isUserLoggedIn(connectionInfo))
 					returnResponse(LOGIN_SUCESSFUL_MSG);
 				else
 					returnResponse(LOGIN_UNSUCESSFUL_MSG);
 			}
-			
-			Log.d("Formulize", "Keep Alive: " + count++);
 
 		} catch (MalformedURLException e) {
 			returnResponse(LOGIN_ERROR_MSG);
@@ -71,10 +81,11 @@ public class LoginRunnable implements Runnable {
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
-	private void attemptLogin(ConnectionInfo connectionInfo) throws IOException, MalformedURLException {
+	private void attemptLogin(ConnectionInfo connectionInfo)
+			throws IOException, MalformedURLException {
 		HttpURLConnection urlConnection;
 		int responseCode;
-		
+
 		// Create connection to server and set request parameters
 		urlConnection = (HttpURLConnection) new URL(
 				connectionInfo.getConnectionURL() + "user.php")
@@ -98,23 +109,25 @@ public class LoginRunnable implements Runnable {
 
 	/**
 	 * Checks if the user currently has a session, if a session already exists,
-	 * the session is renewed.
+	 * the session is renewed. If the given {@link ConnectionInfo} is not a
+	 * Formulize URL, then a {@link MalformedURLException} is thrown.
 	 * 
 	 * @return whether a session exists or not, True if there is a session.
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
-	private Boolean isUserLoggedIn(ConnectionInfo connectionInfo) throws IOException, MalformedURLException {
+	private Boolean isUserLoggedIn(ConnectionInfo connectionInfo)
+			throws IOException, MalformedURLException {
 		HttpURLConnection urlConnection;
-		
+
 		// Check if the connection is a valid Formulize connection
 		urlConnection = (HttpURLConnection) new URL(
 				connectionInfo.getConnectionURL() + "isUserLoggedIn.php")
 				.openConnection();
 
 		InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-		String isUserLoggedIn = ConnectionUtil.readInputToString(new InputStreamReader(in))
-				.trim();
+		String isUserLoggedIn = ConnectionUtil.readInputToString(
+				new InputStreamReader(in)).trim();
 
 		Log.d("Formulize", isUserLoggedIn);
 
@@ -126,7 +139,7 @@ public class LoginRunnable implements Runnable {
 			throw new MalformedURLException();
 		}
 	}
-	
+
 	private void returnResponse(int result) {
 		Message msgObj = handler.obtainMessage();
 		Bundle b = new Bundle();
