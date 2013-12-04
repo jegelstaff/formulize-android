@@ -59,7 +59,7 @@ public class LoginDialogFragment extends DialogFragment {
 
 		// Show and set error message if this is a login re-attempt
 		if (isReattempt) {
-			errorMessageView.setText(R.string.reattempt_message);
+			errorMessageView.setText(R.string.text_reattempt_prompt);
 			errorMessageView.setVisibility(View.VISIBLE);
 		}
 
@@ -77,7 +77,7 @@ public class LoginDialogFragment extends DialogFragment {
 										.cancel();
 
 							}
-						}).setTitle(R.string.sign_in_label);
+						}).setTitle(R.string.text_sign_in);
 
 		final AlertDialog alertDialog = builder.create();
 		

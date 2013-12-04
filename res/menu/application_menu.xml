@@ -5,8 +5,7 @@
         android:id="@+id/logout"
         android:enabled="true"
         android:showAsAction="ifRoom"
-        android:title="Logout"
-        android:titleCondensed="Logout"
+        android:title="@string/menu_logout"
         android:visible="true">
     </item>
 

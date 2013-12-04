@@ -5,26 +5,21 @@
     <string name="title_activity_add_connection">Add Connection</string>
     <string name="title_activity_edit_connection">Edit Connection</string>
 
-    <string name="login_progress_logging_in">Logging in</string>
+    <string name="text_login">LOGIN</string>
+    <string name="text_connection">CONNECTION</string>
+    <string name="text_save_login_credentials">Save username and password</string>
     
-    <string name="login_title">LOGIN</string>
-    <string name="connection_title">CONNECTION</string>
-    
-    <string name="connection_url_hint">URL</string>
-    <string name="connection_name_hint">Connection Name</string>
-    <string name="username_hint">Username</string>
-    <string name="password_hint">Password</string>
+    <string name="hint_connection_url">URL</string>
+    <string name="hint_connection_name">Connection Name</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
         
-    <string name="save_login_credentials_text">Save username and password</string>
     <string name="progress_validation">Validating Connection</string>
     
-    
-    <!-- Error Messages -->
     <string name="error_connection_name">Enter a connection name</string>
     <string name="error_username">Enter an username</string>
     <string name="error_password">Enter a password</string>
     <string name="error_url">Enter a valid URL</string>
     <string name="error_formulize_url">This is not a Formulize URL</string>
 
-    
 </resources>

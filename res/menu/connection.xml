@@ -5,8 +5,7 @@
         android:enabled="true"
         android:icon="@android:drawable/ic_menu_add"
         android:showAsAction="always|withText"
-        android:title="Add"
-        android:titleCondensed="Add Connection"
+        android:title="@string/menu_add_connection"
         android:visible="true">
     </item>
 

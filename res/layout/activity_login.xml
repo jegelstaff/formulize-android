@@ -29,7 +29,7 @@
             android:id="@+id/accountDetailsTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/login_title"
+            android:text="@string/text_login"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <EditText
@@ -37,21 +37,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/connection_url_hint" />
+            android:hint="@string/hint_connection_url" />
 
         <EditText
             android:id="@+id/usernameText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/username_hint" />
+            android:hint="@string/hint_username" />
 
         <EditText
             android:id="@+id/passwordText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/password_hint"
+            android:hint="@string/hint_password"
             android:inputType="textPassword" />
 
         <Button
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/sign_in_label"/>
+            android:text="@string/text_sign_in"/>
 
     </LinearLayout>
 

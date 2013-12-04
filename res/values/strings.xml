@@ -5,17 +5,19 @@
     <string name="action_settings">Settings</string>
 
     <!-- Login Related Strings -->
-    <string name="sign_in_label">Sign in</string>
-    <string name="reattempt_message">Incorrect username or password Try again.</string>
+    <string name="text_sign_in">Sign in</string>
+    <string name="text_reattempt_prompt">Incorrect username or password Try again.</string>
 
     <!-- Connection Strings -->
     <string name="toast_connection_updated">Connection Updated</string>
     <string name="toast_connection_added">Connection Added</string>
     <string name="toast_connection_failed">Invalid Formulize Connection</string>
     <string name="toast_no_network_connection">Network Connection Lost</string>
+    
     <string name="progress_login">Logging in</string>
     <string name="progress_logout">Logging out</string>
     <string name="progress_get_apps">Getting Available Applications</string>
+    
     <string name="dialog_title_no_apps">No Available Applications</string>
     <string name="dialog_title_logout">Logout?</string>
     <string name="dialog_title_no_network">Cannot Connect to Formulize</string>
@@ -31,5 +33,12 @@
     <string name="title_activity_screen_web">Screen</string>
     <string name="title_activity_connection">Formulize</string>
     <string name="title_activity_starter">Formulize</string>
+    
+    <!-- Menu Strings -->
+    <string name="menu_save">Save</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_add_connection">Add Connection</string>
 
 </resources>
