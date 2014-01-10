@@ -219,7 +219,7 @@ public class ApplicationListActivity extends FragmentActivity {
 			try {
 				// Create connection to server and set request parameters
 				urlConnection = (HttpURLConnection) new URL(
-						connectionInfo.getConnectionURL() + "app_list.php")
+						connectionInfo.getConnectionURL() + "modules/formulize/app_list.php")
 						.openConnection();
 
 				// Check Http Status Code

@@ -122,7 +122,7 @@ public class LoginRunnable implements Runnable {
 
 		// Check if the connection is a valid Formulize connection
 		urlConnection = (HttpURLConnection) new URL(
-				connectionInfo.getConnectionURL() + "isUserLoggedIn.php")
+				connectionInfo.getConnectionURL() + "modules/formulize/isUserLoggedIn.php")
 				.openConnection();
 
 		InputStream in = new BufferedInputStream(urlConnection.getInputStream());
